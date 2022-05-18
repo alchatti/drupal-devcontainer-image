@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IMAGE="drupal-devcontainer"
-REPOS=("alchatti")
+REPOS=("alchatti" "ghcr.io/alchatti")
 FLAG=$1
 
 if [ "$FLAG" == "push" ]; then
