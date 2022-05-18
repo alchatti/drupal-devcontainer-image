@@ -1,0 +1,43 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+    paths-ignore: ['**/README.md']
+  pull_request:
+    branches: [ main ]
+    paths-ignore: ['**/README.md']
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  # Run on Monday & Tuesday
+  schedule:
+    - cron: '0 0 * * MON'
+    - cron: '0 0 * * WED'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Images
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Tag Images
+        run: |
+          chmod +x ./tag.sh
+          ./tag.sh
+      - name: Docker Login
+        uses: docker/login-action@v2.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push Images
+        run: |
+          ./tag.sh "push"
+
