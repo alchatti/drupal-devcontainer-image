@@ -14,7 +14,7 @@ if [ "$FLAG" == "push" ]; then
     done;
 
   done;
-  exit 1;
+  exit 0;
 fi;
 
 # List the built images
