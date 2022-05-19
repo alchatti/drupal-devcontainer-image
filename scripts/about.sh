@@ -15,13 +15,14 @@ vr_composer=$(composer --version | awk '{print $3}')
 
 if [ $vr_node_lts == "undefined" ]
 then
-	TAG_S="$vr_php_major-n$vr_node_major"
+	TAG_N="n$vr_node_major"
 
 else
-	TAG_S="$vr_php_major-n${vr_node_major}LTS"
+	TAG_N="n${vr_node_major}LTS"
 fi;
 
-TAG_L="$TAG_S-s$vr_sass"
+TAG_S="$vr_php_major-$TAG_N"
+TAG_L="$vr_php_major.$vr_php_minor-$TAG_N"
 TAG=$vr_php-n$vr_node-s$vr_sass-c$vr_composer-npm$vr_npm
 
 case $1 in
