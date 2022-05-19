@@ -3,7 +3,20 @@
 # For list of tags vsist https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list
 
 ARG VARIANT
+
 FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
+
+ARG VARIANT
+ARG CREATE_DATE
+
+LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
+LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer, NodeJS, and Dart Sass"
+LABEL org.opencontainers.image.authors="Majed Al-Chatti"
+LABEL org.opencontainers.image.source="https://github.com/alchatti/drupal-devcontainer-image"
+LABEL org.opencontainers.image.documentation="https://github.com/alchatti/drupal-devcontainer-image"
+LABEL org.opencontainers.image.base.name="ghcr.io/alchatti/drupal-devcontainer"
+LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$VARIANT"
+LABEL org.opencontainers.image.created=$CREATE_DATE
 
 # START - Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need

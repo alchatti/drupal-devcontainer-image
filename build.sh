@@ -45,7 +45,7 @@ fi;
 
 if [ -z "$SASS" ]; then SASS=$(curl https://api.github.com/repos/sass/dart-sass/releases/latest | jq -r '.tag_name'); echo "No version provided setting SASS to latest > $SASS";fi
 
-timestamp=$(date +%y%m%d)
+timestamp=$(date "+%Y-%m-%d %H:%M:%S")
 printf "\n\ntimeStamp > $timestamp \n\n"
 
 for phpver in ${PHP[@]}
@@ -53,13 +53,19 @@ do
   printf "\nBuilding image with \n - PHP $phpver \n - NodeJs $NODE \n - dart-sass $SASS \n\n"
 
   docker build \
-    --build-arg VARIANT=$phpver --build-arg NODE_VERSION="node" --build-arg DART_SASS_VERSION=$SASS \
-    -t drupal-devcontainer:$phpver .
+    --build-arg VARIANT="$phpver" \
+    --build-arg NODE_VERSION="node" \
+    --build-arg DART_SASS_VERSION="$SASS" \
+    --build-arg CREATE_DATE="$timestamp" \
+    -t drupal-devcontainer:"$phpver" .
 
-  printf "\nBuilding image with \n - PHP $phpver \n - NodeJs Lts \n - dart-sass $SASS \n\n"
+  # printf "\nBuilding image with \n - PHP $phpver \n - NodeJs Lts \n - dart-sass $SASS \n\n"
 
   docker build \
-    --build-arg VARIANT=$phpver --build-arg NODE_VERSION="--lts" --build-arg DART_SASS_VERSION=$SASS \
-    -t drupal-devcontainer:$phpver-nLTS .
+    --build-arg VARIANT="$phpver" \
+    --build-arg NODE_VERSION="--lts" \
+    --build-arg DART_SASS_VERSION="$SASS" \
+    --build-arg CREATE_DATE="$timestamp" \
+    -t drupal-devcontainer:"$phpver"-nLTS .
 done
 
