@@ -50,7 +50,7 @@ docker pull alchatti/drupal-devcontainer:7
 
 ```bash
 # 7 with lastest NodeJs LTS
-docker pull alchatti/drupal-devcontainer:8-nLTS
+docker pull alchatti/drupal-devcontainer:7-nLTS
 ```
 
 ### Tag definition
