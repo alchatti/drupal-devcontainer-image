@@ -24,7 +24,7 @@ This image adds the following:
 	- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
 	- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 
-The iamge is targeting the latest 7 & 8 versions of PHP with latest NodeJs/lts version.
+The image is targeting the latest 7 & 8 versions of PHP with latest NodeJs/lts version.
 
 ## Usage
 
