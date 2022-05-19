@@ -30,8 +30,9 @@ for image in ${IMAGES[@]}; do
   TAG=$(echo $TAGS | jq -r '.TAG')
   TAG_L=$(echo $TAGS | jq -r '.TAG_L')
   TAG_S=$(echo $TAGS | jq -r '.TAG_S')
+  TAG_F=$(echo $TAGS | jq -r '.TAG_F')
 
-  TAGS=($TAG $TAG_L $TAG_S)
+  TAGS=($TAG $TAG_L $TAG_S $TAG_F)
 
   for repo in ${REPOS[@]}; do
     docker tag $image $repo/$image
