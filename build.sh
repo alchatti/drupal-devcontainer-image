@@ -19,7 +19,7 @@ done
 
 if [ -z "$PHP" ]
 then
-  PHP=("8" "7")
+  PHP=("7" "8")
   echo "No version setting PHP to defaults"
 else
   PHP=($PHP);
@@ -27,18 +27,6 @@ fi;
 
 if [ -z "$NODE" ]
 then
-  # NODE_RAW=$(curl https://nodejs.org/dist/index.json | jq -r '. [0]')
-  # NODE_LTS_RAW=$(curl https://nodejs.org/dist/index.json | jq -r '[.[] | select(.lts!=false)][0]')
-
-  # NODE=$(echo $NODE_RAW | jq -r '.version' | sed 's/v//')
-  # NODE_MAJOR=$(echo $NODE_RAW | jq -r '.version |=split(".") | .version[0] ' | sed 's/v//')
-
-  # NODE_LTS=$(echo $NODE_LTS_RAW | jq -r '.version' | sed 's/v//')
-  # NODE_LTS_MAJOR=$(echo $NODE_LTS_RAW | jq -r '.version |=split(".") | .version[0] ' | sed 's/v//')
-  # NODE_LTS_CODENAME=$(echo $NODE_LTS_RAW | jq -r '.lts')
-  # printf "\n\nNo version provided setting NodeJs to latest version > $NODE & LTS $NODE_LTS codename > $NODE_LTS_CODENAME"
-  # printf "\n\nMajor versions $NODE_MAJOR & ${NODE_LTS_MAJOR} LTS\n\n"
-
   NODE="node"
   NODE_LTS="--lts"
   printf "\n\nNo version provided setting NodeJs to latest version & latest LTS\n\n"
