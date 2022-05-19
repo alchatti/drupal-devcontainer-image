@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
 
 ARG VARIANT
 ARG CREATE_DATE
+ARG DRUPAL_CODER_VERSION
 
 LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
 LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer, NodeJS, and Dart Sass"
@@ -148,8 +149,6 @@ RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
 # Drupal Coder and phpcs Requirements
-# version is specified due to bug https://www.drupal.org/project/coder/issues/3262291
-ARG DRUPAL_CODER_VERSION="8.3.13"
 RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/bin/phpcs

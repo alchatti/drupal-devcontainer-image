@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DRUPAL_CODER_VERSION="8.3.13" # version is specified due to bug https://www.drupal.org/project/coder/issues/3262291
+
 print_usage() {
   printf "\nBuild script usage: -p phpVer -s sassVer -n nodeJSVer\n\nIf no version is provided the latest will be used\n\n# For list of tags vsist https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list\n\n"
 }
@@ -57,6 +59,7 @@ do
     --build-arg NODE_VERSION="node" \
     --build-arg DART_SASS_VERSION="$SASS" \
     --build-arg CREATE_DATE="$timestamp" \
+    --build-arg DRUPAL_CODER_VERSION="$DRUPAL_CODER_VERSION" \
     -t drupal-devcontainer:"$phpver" .
 
   # printf "\nBuilding image with \n - PHP $phpver \n - NodeJs Lts \n - dart-sass $SASS \n\n"
@@ -66,6 +69,7 @@ do
     --build-arg NODE_VERSION="--lts" \
     --build-arg DART_SASS_VERSION="$SASS" \
     --build-arg CREATE_DATE="$timestamp" \
+    --build-arg DRUPAL_CODER_VERSION="$DRUPAL_CODER_VERSION" \
     -t drupal-devcontainer:"$phpver"-nLTS .
 done
 
