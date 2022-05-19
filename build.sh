@@ -35,7 +35,7 @@ fi;
 
 if [ -z "$SASS" ]; then SASS=$(curl https://api.github.com/repos/sass/dart-sass/releases/latest | jq -r '.tag_name'); echo "No version provided setting SASS to latest > $SASS";fi
 
-timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+timestamp=$(date "+%a, %d %b %Y %T %Z" --u)
 printf "\n\ntimeStamp > $timestamp \n\n"
 
 for phpver in ${PHP[@]}
