@@ -9,6 +9,8 @@ FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
 ARG VARIANT
 ARG CREATE_DATE
 ARG DRUPAL_CODER_VERSION
+ARG NODE_VERSION
+ARG DART_SASS_VERSION
 
 LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
 LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer, NodeJS, and Dart Sass"
@@ -162,12 +164,10 @@ USER root
 RUN mkdir /mnt/files
 RUN chown vscode:vscode /mnt/files
 
-# Node.js version: node, --lts, --lts-latest
-ARG NODE_VERSION="none"
+# Node.js node, --lts, --lts-latest
 RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
 
-# DART SASS version
-ARG DART_SASS_VERSION="none"
+# DART SASS
 RUN if [ "${DART_SASS_VERSION}" != "none" ] && [ "${DART_SASS_VERSION}" != "" ]; then \
   wget -P /opt/ https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
   tar -C /opt/ -xzvf /opt/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
