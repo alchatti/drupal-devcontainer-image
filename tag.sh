@@ -12,8 +12,6 @@ if [ "$FLAG" == "push" ]; then
       echo "Pushing $image"
       docker push $image
     done;
-    # For the sake of simplicity on registry usage commands
-    docker push "${repo}/${IMAGE}:8"
   done;
   exit 0;
 fi;
