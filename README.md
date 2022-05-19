@@ -33,24 +33,32 @@ The image is targeting the latest 7 & 8 versions of PHP with latest NodeJs/lts v
 ### PHP 8
 
 ```bash
-# with latest NodeJs
+# Latest PHP 8 & NodeJs
 docker pull alchatti/drupal-devcontainer:8
+# PHP 8.1 & lastest NodeJs
+docker pull alchatti/drupal-devcontainer:8.1
 ```
 
 ```bash
-# with lastest NodeJs LTS
+# Latest PHP 8 & NodeJs LTS
 docker pull alchatti/drupal-devcontainer:8-nLTS
+# PHP 8.1 & lastest NodeJs LTS
+docker pull alchatti/drupal-devcontainer:8.1-nLTS
 ```
 ### PHP 7
 
 ```bash
-# 7 with latest NodeJs
+# Latest PHP 7 & NodeJs
 docker pull alchatti/drupal-devcontainer:7
+# PHP 7.4 & lastest NodeJs
+docker pull alchatti/drupal-devcontainer:7.4
 ```
 
 ```bash
-# 7 with lastest NodeJs LTS
+# Latest PHP 7 & NodeJs LTS
 docker pull alchatti/drupal-devcontainer:7-nLTS
+# PHP 7.4 & lastest NodeJs LTS
+docker pull alchatti/drupal-devcontainer:7.4-nLTS
 ```
 
 ### Tag definition
