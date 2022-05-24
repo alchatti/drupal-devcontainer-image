@@ -159,6 +159,8 @@ RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/bin/phpcs
 
 RUN mkdir ~/.pnpm-store
 RUN mkdir ~/.acquia
+RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
+  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 USER root
 
