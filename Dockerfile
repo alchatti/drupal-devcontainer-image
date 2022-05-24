@@ -150,6 +150,8 @@ RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
 
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
+ENV POSH_THEME_ENVIRONMENT "ys"
+
 # Drupal Coder and phpcs Requirements
 RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
