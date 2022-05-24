@@ -6,9 +6,11 @@
 echo ">> init script started <<"
 echo "Checking if Drupal is installed..."
 
-FILE=/var/www/html/docroot/index.php
+DIR=$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT
 
-if [ ! -e $FILE ]
+FILE=$DIR/index.php
+
+if [ ! -e $FILE ] || [ $(ls $DIR | wc -l) -lt 2]
 then
 	echo "Drupal is not installed, installing..."
 	# Create the database.
@@ -32,5 +34,5 @@ then
 
 	yes | composer update
 else
-	echo "Drupal already installed..."
+	printf "Found more than one file in $DIR, skipping installation\n\nUse >> rm $DIR/* >> to empty the directory\n"
 fi;
