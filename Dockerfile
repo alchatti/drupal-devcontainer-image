@@ -128,13 +128,11 @@ RUN chmod +x /usr/local/bin/oh-my-posh && \
 #Zsh Plugins
 ADD https://github.com/zsh-users/zsh-autosuggestions/archive/refs/heads/master.zip /tmp/zsh-autosuggestions.zip
 RUN unzip /tmp/zsh-autosuggestions.zip -d  /tmp/zsh-autosuggestions \
-  # && mkdir /home/vscode/.oh-my-zsh/plugins/zsh-autosuggestions \
   && mv /tmp/zsh-autosuggestions/zsh-autosuggestions-master /home/vscode/.oh-my-zsh/plugins/zsh-autosuggestions \
   && chown vscode:vscode /home/vscode/.oh-my-zsh/plugins/zsh-autosuggestions
 
 ADD https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/heads/master.zip /tmp/zsh-syntax-highlighting.zip
 RUN unzip /tmp/zsh-syntax-highlighting.zip -d  /tmp/zsh-syntax-highlighting \
-  # && mkdir /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting \
   && mv /tmp/zsh-syntax-highlighting/zsh-syntax-highlighting-master /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting \
   && chown vscode:vscode /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting
 
