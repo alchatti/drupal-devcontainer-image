@@ -106,6 +106,10 @@ RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlig
 
 USER root
 
+# DART SASS
+ADD https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz /tmp/dart-sass.tar.gz
+RUN tar -C /opt/ -xzvf /tmp/dart-sass.tar.gz && \
+  ln -s /opt/dart-sass/sass /usr/local/bin/sass
 
 # Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need
@@ -162,13 +166,5 @@ RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/bin/phpcs
 
 # Node.js node, --lts, --lts-latest
 RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
-
-# DART SASS
-RUN if [ "${DART_SASS_VERSION}" != "none" ] && [ "${DART_SASS_VERSION}" != "" ]; then \
-  wget -P /opt/ https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
-  tar -C /opt/ -xzvf /opt/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
-  rm /opt/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
-  ln -s /opt/dart-sass/sass /usr/bin/sass; \
-  fi;
 
 RUN rm -r /tmp/*
