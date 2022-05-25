@@ -103,6 +103,8 @@ RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
 
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
+# Start Apache on Zsh shell startup
+RUN echo "apache2ctl start" >> ~/.zshrc
 
 USER root
 
