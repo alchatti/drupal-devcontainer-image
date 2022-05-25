@@ -38,6 +38,8 @@ RUN set -eux; \
   libpng-dev \
   libpq-dev \
   libzip-dev \
+  unzip \
+  default-mysql-client \
   ; \
   \
   docker-php-ext-configure gd \
@@ -76,9 +78,6 @@ ENV WORKSPACE_ROOT "/var/www/html"
 # ENV based Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
-RUN apt-get update; \
-  apt-get install -y unzip \
-  default-mysql-client;
 
 # Disable XDebug warning message not able to connect to client (causing issue with phpcs & outputs)
 RUN echo "xdebug.log_level = 0" >> /usr/local/etc/php/conf.d/xdebug.ini
