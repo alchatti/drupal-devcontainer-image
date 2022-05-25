@@ -86,24 +86,16 @@ COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
 
 # Init Script
 COPY ./scripts/init.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/init.sh
-
 COPY ./scripts/about.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/about.sh
-
 COPY ./scripts/dump.sh /usr/local/bin/dump
-RUN chmod +x /usr/local/bin/dump
-
 COPY ./scripts/drestore.sh /usr/local/bin/drestore
-RUN chmod +x /usr/local/bin/drestore
-
 COPY ./scripts/acli-dump.sh /usr/local/bin/acli-dump
-RUN chmod +x /usr/local/bin/acli-dump
 
-
-# Add Drush Launcher for Global and local Drush
-ADD https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar /usr/bin/drush
-RUN chmod ugo+rx /usr/bin/drush
+RUN chmod +x /usr/local/bin/init.sh && \
+  chmod +x /usr/local/bin/about.sh && \
+  chmod +x /usr/local/bin/dump && \
+  chmod +x /usr/local/bin/drestore && \
+  chmod +x /usr/local/bin/acli-dump
 
 # Drush Launcher global drush as fallback
 ENV DRUSH_LAUNCHER_FALLBACK /opt/drush
