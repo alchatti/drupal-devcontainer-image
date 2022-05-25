@@ -21,12 +21,12 @@ LABEL org.opencontainers.image.base.name="ghcr.io/alchatti/drupal-devcontainer"
 LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$VARIANT"
 LABEL org.opencontainers.image.created=$CREATE_DATE
 
-# ENV Defailts fpr APACHE
+# ENV Defaults fpr APACHE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
 
-# ENV based Apache Configurations
+# Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 
