@@ -10,7 +10,7 @@ DIR=$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT
 
 FILE=$DIR/index.php
 
-if [ ! -e $FILE ] || [ $(ls $DIR | wc -l) -lt 2]
+if [ ! -e $FILE ] || [ $(ls $DIR | wc -l) -le 2 ]
 then
 	echo "Drupal is not installed, installing..."
 	# Create the database.
