@@ -81,8 +81,8 @@ RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /et
 RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 
 
-# Disable XDebug warning message not able to connect to client (causing issue with phpcs & outputs)
-RUN echo "xdebug.log_level = 0" >> /usr/local/etc/php/conf.d/xdebug.ini
+# PHP Development settings overwrite
+COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
 
 # Init Script
 COPY ./scripts/init.sh /usr/local/bin/
