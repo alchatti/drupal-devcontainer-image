@@ -72,11 +72,13 @@ RUN set -eux; \
 #END
 
 # ENV Defailts fpr APACHE
+ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
 
 # ENV based Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 
 
 # Disable XDebug warning message not able to connect to client (causing issue with phpcs & outputs)
