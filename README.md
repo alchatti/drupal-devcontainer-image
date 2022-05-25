@@ -28,37 +28,28 @@ The image is targeting the latest 7 & 8 versions of PHP with latest NodeJs/lts v
 
 ## Usage
 
-> This section is work in progress stay tune.
+> This section is work in progress.
 
-### PHP 8
+Most of the feature are enabled for the container user `vscode` which is a none root user provided by the base image.
+
+To access the container `zsh` in interactive mode as vscode. Remove `--rm` to persist the container on exit.
+
+- Latest PHP 8 & NodeJs
 
 ```bash
-# Latest PHP 8 & NodeJs
-docker pull alchatti/drupal-devcontainer:8
-# PHP 8.1 & lastest NodeJs
-docker pull alchatti/drupal-devcontainer:8.1
+docker run -u="vscode" -it --rm -p 80:80 docker.io/alchatti/drupal-devcontainer:8 zsh
 ```
 
-```bash
-# Latest PHP 8 & NodeJs LTS
-docker pull alchatti/drupal-devcontainer:8-nLTS
-# PHP 8.1 & lastest NodeJs LTS
-docker pull alchatti/drupal-devcontainer:8.1-nLTS
-```
-### PHP 7
+- PHP 7.4 & NodeJs LTS
 
 ```bash
-# Latest PHP 7 & NodeJs
-docker pull alchatti/drupal-devcontainer:7
-# PHP 7.4 & lastest NodeJs
-docker pull alchatti/drupal-devcontainer:7.4
+docker run -u="vscode" -it --rm -p 80:80 docker.io/alchatti/drupal-devcontainer:7.4-n16LTS
 ```
 
+- Example of usage with a 'blue-owl' [Oh My Posh theme](https://ohmyposh.dev/docs/themes). `POSH_THEME_ENVIRONMENT` is a pre-defined image environment variable.
+
 ```bash
-# Latest PHP 7 & NodeJs LTS
-docker pull alchatti/drupal-devcontainer:7-nLTS
-# PHP 7.4 & lastest NodeJs LTS
-docker pull alchatti/drupal-devcontainer:7.4-nLTS
+docker run -u="vscode" -it --rm -p 80:80 -e POSH_THEME_ENVIRONMENT='blue-owl' docker.io/alchatti/drupal-devcontainer:8 zsh
 ```
 
 ### Tag definition
@@ -69,8 +60,10 @@ Example
 
 - `8`: PHP 8 with latest NodeJs, Sass and Composer at build.
 - `8-n18`: PHP 8 with latest NodeJs 18 and latest Sass and Composer at build.
-- `8-n18-s1.51.0`: PHP 8 with latest NodeJs 18, Sass 1.51.0 and latest Composer at build.
+- `8-n16LTS`: PHP 8 with NodeJs LTS 16 and latest Sass and Composer at build.
 - `8.1.4-n18.2.0-s1.51.0-c2.3.4-npm8.9.0`: PHP 8.1.4 with NodeJs 18.2.0, Sass 1.51.0, Composer 2.3.4 and npm 8.9.0 at build.
+
+Replace `8` with `7` to target PHP 7, you can also use `8.1` or `7.4`.
 
 # Reference
 
