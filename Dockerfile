@@ -80,6 +80,9 @@ ENV WORKSPACE_ROOT "/var/www/html"
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 
+# Drupal filesystem
+RUN mkdir /mnt/files
+RUN chown vscode:vscode /mnt/files
 
 # PHP Development settings overwrite
 COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
@@ -138,29 +141,27 @@ RUN unzip /tmp/zsh-syntax-highlighting.zip -d  /tmp/zsh-syntax-highlighting \
 
 USER vscode
 
+RUN mkdir ~/.pnpm-store && mkdir ~/.acquia && \
+  mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
+  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
+
+ENV POSH_THEME_ENVIRONMENT "ys"
+
 RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
   sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
   echo "exec \$SHELL -l"  >> ~/.bashrc
 
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
-ENV POSH_THEME_ENVIRONMENT "ys"
 
 # Drupal Coder and phpcs Requirements
 RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/bin/phpcs
 
-RUN mkdir ~/.pnpm-store
-RUN mkdir ~/.acquia
-RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
-  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 USER root
 
-# Drupal filesystem
-RUN mkdir /mnt/files
-RUN chown vscode:vscode /mnt/files
 
 # Node.js node, --lts, --lts-latest
 RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
