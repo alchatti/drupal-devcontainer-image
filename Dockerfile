@@ -106,6 +106,12 @@ RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlig
 # Start Apache on Zsh shell startup
 RUN echo "apache2ctl start" >> ~/.zshrc
 
+# Drupal Coder and phpcs Requirements
+RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
+RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
+  sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
+
 USER root
 
 # DART SASS
@@ -161,10 +167,7 @@ RUN set -eux; \
   rm -rf /var/lib/apt/lists/*
 #END
 
-# Drupal Coder and phpcs Requirements
-RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
-RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/bin/phpcs
+
 
 # Node.js node, --lts, --lts-latest
 RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
