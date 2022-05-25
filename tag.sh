@@ -3,6 +3,7 @@
 IMAGE="drupal-devcontainer"
 REPOS=("alchatti" "ghcr.io/alchatti")
 FLAG=$1
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ "$FLAG" == "push" ]; then
   for repo in ${REPOS[@]}; do
@@ -31,16 +32,22 @@ for image in ${IMAGES[@]}; do
   TAG_F=$(echo $TAGS | jq -r '.TAG_F')
 
   TAGS=($TAG $TAG_L $TAG_S $TAG_F)
+  POSTFIX=""
+  if [ "$BRANCH" != "main" ]; then
+    POSTFIX="-$BRANCH"
+  fi;
 
   for repo in ${REPOS[@]}; do
-    docker tag $image $repo/$image
-    echo "$repo/$image"
+    tag=$repo/$image-$POSTFIX
+
+    docker tag $tag
+    echo "$tag"
 
     for tag in ${TAGS[@]}; do
-      taged=$repo/$IMAGE":${tag}"
+      tag=$repo/$IMAGE":${tag}-$POSTFIX"
 
-      docker tag $image $taged
-      echo $taged
+      docker tag $image $tag
+      echo $tag
     done;
 
   done;
