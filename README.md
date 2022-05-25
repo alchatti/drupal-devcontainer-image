@@ -13,7 +13,7 @@ This image adds the following:
 
 - Acquia tools
 	- [X] [Acquia CLI](https://docs.acquia.com/acquia-cli/)
-	- [X] [Acquia BLT launcer](https://github.com/acquia/blt-launcher/)
+	- [X] [Acquia BLT launcher](https://github.com/acquia/blt-launcher/)
 
 - Front-End development
 	- [X] [Node.js](https://nodejs.org)
