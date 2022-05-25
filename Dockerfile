@@ -21,56 +21,6 @@ LABEL org.opencontainers.image.base.name="ghcr.io/alchatti/drupal-devcontainer"
 LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$VARIANT"
 LABEL org.opencontainers.image.created=$CREATE_DATE
 
-# START - Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
-# install the PHP extensions we need
-RUN set -eux; \
-  \
-  if command -v a2enmod; then \
-  a2enmod rewrite; \
-  fi; \
-  \
-  savedAptMark="$(apt-mark showmanual)"; \
-  \
-  apt-get update; \
-  apt-get install -y --no-install-recommends \
-  libfreetype6-dev \
-  libjpeg-dev \
-  libpng-dev \
-  libpq-dev \
-  libzip-dev \
-  unzip \
-  default-mysql-client \
-  ; \
-  \
-  docker-php-ext-configure gd \
-  --with-freetype \
-  --with-jpeg=/usr \
-  ; \
-  \
-  docker-php-ext-install -j "$(nproc)" \
-  gd \
-  opcache \
-  pdo_mysql \
-  pdo_pgsql \
-  zip \
-  ; \
-  \
-  # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-  apt-mark auto '.*' > /dev/null; \
-  apt-mark manual $savedAptMark; \
-  ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-  | awk '/=>/ { print $3 }' \
-  | sort -u \
-  | xargs -r dpkg-query -S \
-  | cut -d: -f1 \
-  | sort -u \
-  | xargs -rt apt-mark manual; \
-  \
-  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-  rm -rf /var/lib/apt/lists/*
-
-#END
-
 # ENV Defailts fpr APACHE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
@@ -154,14 +104,61 @@ RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
 
+USER root
+
+
+# Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
+# install the PHP extensions we need
+RUN set -eux; \
+  \
+  if command -v a2enmod; then \
+  a2enmod rewrite; \
+  fi; \
+  \
+  savedAptMark="$(apt-mark showmanual)"; \
+  \
+  apt update; \
+  apt install -y --no-install-recommends \
+  libfreetype6-dev \
+  libjpeg-dev \
+  libpng-dev \
+  libpq-dev \
+  libzip-dev \
+  default-mysql-client \
+  ; \
+  \
+  docker-php-ext-configure gd \
+  --with-freetype \
+  --with-jpeg=/usr \
+  ; \
+  \
+  docker-php-ext-install -j "$(nproc)" \
+  gd \
+  opcache \
+  pdo_mysql \
+  pdo_pgsql \
+  zip \
+  ; \
+  \
+  # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+  apt-mark auto '.*' > /dev/null; \
+  apt-mark manual $savedAptMark; \
+  ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+  | awk '/=>/ { print $3 }' \
+  | sort -u \
+  | xargs -r dpkg-query -S \
+  | cut -d: -f1 \
+  | sort -u \
+  | xargs -rt apt-mark manual; \
+  \
+  apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+  rm -rf /var/lib/apt/lists/*
+#END
+
 # Drupal Coder and phpcs Requirements
 RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/bin/phpcs
-
-
-USER root
-
 
 # Node.js node, --lts, --lts-latest
 RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
