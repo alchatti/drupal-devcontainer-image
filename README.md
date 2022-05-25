@@ -30,27 +30,25 @@ The image is targeting the latest 7 & 8 versions of PHP with latest NodeJs/lts v
 
 > This section is work in progress.
 
-Most of the feature are enabled for the container user `vscode` which is a none root user provided by the base image.
+Dev feature are set for the container user `vscode` which is a none root user provided by the base image.
 
-To access the container `zsh` in interactive mode as vscode. Remove `--rm` to persist the container on exit.
+To access the container `zsh` shell in interactive mode as `vscode`.
 
-- Latest PHP 8 & NodeJs
+> Apache server will start as part of the zsh startup script using command `apache2ctl start`
 
-```bash
-docker run -u="vscode" -it --rm -p 80:80 docker.io/alchatti/drupal-devcontainer:8 zsh
-```
-
-- PHP 7.4 & NodeJs LTS
+- Latest PHP 8 & NodeJs with hostname `drupal-devcontainer`
 
 ```bash
-docker run -u="vscode" -it --rm -p 80:80 docker.io/alchatti/drupal-devcontainer:7.4-n16LTS
+docker run -h "drupal-devcontainer" -u "vscode" -it --rm -p 80:80 docker.io/alchatti/drupal-devcontainer:8 zsh
 ```
 
-- Example of usage with a 'blue-owl' [Oh My Posh theme](https://ohmyposh.dev/docs/themes). `POSH_THEME_ENVIRONMENT` is a pre-defined image environment variable.
+- Example of usage with a 'blue-owl' by overriding environment variable `POSH_THEME_ENVIRONMENT`, for more theme options check [Oh My Posh theme](https://ohmyposh.dev/docs/themes).
 
 ```bash
-docker run -u="vscode" -it --rm -p 80:80 -e POSH_THEME_ENVIRONMENT='blue-owl' docker.io/alchatti/drupal-devcontainer:8 zsh
+docker run -u "vscode" -e POSH_THEME_ENVIRONMENT='blue-owl' -it --rm -p 80:80 docker.io/alchatti/drupal-devcontainer:8 zsh
 ```
+
+Note: `--rm` flag deletes the created container on exit.
 
 ### Tag definition
 
