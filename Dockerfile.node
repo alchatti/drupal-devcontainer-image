@@ -18,4 +18,4 @@ LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$V
 LABEL org.opencontainers.image.created=$CREATE_DATE
 
 # Node.js node, --lts, --lts-latest
-RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
+RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm install -g npm@latest && npm -g i pnpm"; fi
