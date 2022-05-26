@@ -1,4 +1,5 @@
 # Development Container for Drupal
+<sub>Document Version: 2022MAY26</sub>
 
 Drupal development container based on [Microsoft PHP devcontainer image](https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list).
 
