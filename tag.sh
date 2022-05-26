@@ -34,17 +34,17 @@ for image in ${IMAGES[@]}; do
   TAGS=($TAG $TAG_L $TAG_S $TAG_F)
   POSTFIX=""
   if [ "$BRANCH" != "main" ]; then
-    POSTFIX="-$BRANCH"
+    POSTFIX="--$BRANCH"
   fi;
 
   for repo in ${REPOS[@]}; do
-    tag=$repo/$image-$POSTFIX
+    tag=$repo/$image$POSTFIX
 
     docker tag $image $tag
     echo "✔️  $tag"
 
     for tag in ${TAGS[@]}; do
-      tag="$repo/$IMAGE:${tag}-$POSTFIX"
+      tag="$repo/$IMAGE:${tag}$POSTFIX"
       docker tag $image $tag
       echo "✔️  $tag"
     done;
