@@ -25,6 +25,9 @@ LABEL org.opencontainers.image.created=$CREATE_DATE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
+# Default theme
+ENV POSH_THEME_ENVIRONMENT "ys"
+
 
 # Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
@@ -94,8 +97,6 @@ USER vscode
 RUN mkdir ~/.pnpm-store && mkdir ~/.acquia && \
   mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
   echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
-
-ENV POSH_THEME_ENVIRONMENT "ys"
 
 RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
   sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
