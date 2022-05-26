@@ -9,10 +9,14 @@ if [ "$FLAG" == "push" ]; then
   for repo in ${REPOS[@]}; do
     IMAGES=($(docker images $repo/$IMAGE --format "{{.Repository}}:{{.Tag}}"))
 
-    for image in ${IMAGES[@]}; do
+    # Reverse push order for shorter tag to be pushed last
+    for (( idx=${#IMAGES[@]}-1 ; idx>=0 ; idx-- )) ; do
+      image=${IMAGES[$idx]}
+
       echo "Pushing $image"
       docker push $image
     done;
+
   done;
   exit 0;
 fi;
