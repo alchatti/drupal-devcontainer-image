@@ -165,6 +165,7 @@ RUN set -eux; \
   | xargs -rt apt-mark manual; \
   \
   apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+  apt install -y --no-install-recommends sqlite3=3.*; \
   rm -rf /var/lib/apt/lists/*
 #END
 
