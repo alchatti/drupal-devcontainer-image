@@ -18,7 +18,6 @@ on:
     - cron: '0 0 * * MON'
     # - cron: '0 0 * * WED'
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build:
     strategy:
@@ -33,10 +32,10 @@ jobs:
           chmod +x ./build.sh
           chmod +x ./tag.sh
 
-      - name: Build Images for ${{matrix.php_ver}}
+      - name: Build Images for PHP ${{matrix.php_ver}}
         run: ./build.sh -p${{matrix.php_ver}}
 
-      - name: Tag Images
+      - name: Tag Images for PHP ${{matrix.php_ver}}
         run: ./tag.sh
 
       - name: Docker Login
@@ -53,6 +52,4 @@ jobs:
           password: ${{ secrets.PKG_GITHUB_TOKEN }}
 
       - name: Push Images
-        run: |
-          ./tag.sh "push"
-
+        run: ./tag.sh "push"
