@@ -1,0 +1,21 @@
+# Addes Node.js to the image
+
+ARG VARIANT
+
+FROM base/drupal-devcontainer:${VARIANT}
+
+ARG VARIANT
+ARG CREATE_DATE
+ARG NODE_VERSION
+
+LABEL org.opencontainers.image.title="Drupal Devcontainer Image with Node $NODE_VERSION"
+LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer, Node.js, and Dart Sass"
+LABEL org.opencontainers.image.authors="Majed Al-Chatti"
+LABEL org.opencontainers.image.source="https://github.com/alchatti/drupal-devcontainer-image"
+LABEL org.opencontainers.image.documentation="https://github.com/alchatti/drupal-devcontainer-image"
+LABEL org.opencontainers.image.base.name="ghcr.io/alchatti/drupal-devcontainer"
+LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$VARIANT"
+LABEL org.opencontainers.image.created=$CREATE_DATE
+
+# Node.js node, --lts, --lts-latest
+RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm install -g npm@latest && npm -g i pnpm"; fi
