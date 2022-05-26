@@ -30,7 +30,7 @@ jobs:
       - name: Build Images
         run: |
           chmod +x ./build.sh
-          ./build.sh ${{matrix.php_ver}}
+          ./build.sh -p${{matrix.php_ver}}
       - name: Tag Images
         run: |
           chmod +x ./tag.sh
