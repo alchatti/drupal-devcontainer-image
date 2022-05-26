@@ -20,19 +20,19 @@ done
 if [ -z "$PHP" ]
 then
   PHP=("7" "8")
-  echo "No version setting PHP to defaults"
+  printf "- No PHP version setting defaulting to 7 and 8 \n\n"
 fi;
 
 if [ -z "$NODE" ]
 then
   NODE=("--lts" "node")
-  printf "\n\nNo version provided setting NodeJs to latest version & latest LTS\n\n"
+  printf "- No Node.js version provided setting NodeJs to latest version & latest LTS\n\n"
 fi;
 
 if [ -z "$SASS" ]
 then
   SASS=$(curl https://api.github.com/repos/sass/dart-sass/releases/latest | jq -r '.tag_name')
-  echo "No version provided setting SASS to latest > $SASS"
+  echo "- No SASS version provided setting SASS to latest > $SASS"
 fi
 
 timestamp=$(date "+%a, %d %b %Y %T %Z" --u)
