@@ -89,12 +89,14 @@ The image is targeting the latest 7 & 8 versions of PHP with latest Node.js/lts 
 ```bash
 # print image package versions/tags in json format
 about | jq
+# Download latest acquia cloud database backup using Acquia CLi
+acli-dump
 # create a time stamped sql dump of the database using drush and store it under /var/www/html/dump
-dump.sh
+dump
 # restore an sql dump from file using drush
-drestore.sh $file
-# Download latest acquia cloud database backup using acli
-acli-dump.sh
+drestore $file
+# Setup a Drupal 9 site with Composer
+init.sh
 ```
 
 ### Installed packages
