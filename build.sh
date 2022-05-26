@@ -40,21 +40,38 @@ printf "\n\ntimeStamp > $timestamp \n\n"
 
 for phpver in ${PHP[@]}
 do
-  for nodever in ${NODE[@]}
-  do
-    printf "\nBuilding image with \n - PHP $phpver \n - NodeJs $nodever \n - dart-sass $SASS \n\n"
+  printf "\nBuilding image with \n - PHP $phpver - dart-sass $SASS \n\n"
 
-    tag=$phpver
+  tag=$phpver
 
-    if [ "$nodever" == "--lts" ]; then tag="$phpver-nLTS"; fi;
+  docker build \
+    --build-arg VARIANT="$phpver" \
+    --build-arg DART_SASS_VERSION="$SASS" \
+    --build-arg CREATE_DATE="$timestamp" \
+    --build-arg DRUPAL_CODER_VERSION="$DRUPAL_CODER_VERSION" \
+    -t base/drupal-devcontainer:"$tag" .
 
-    docker build \
+  if [ $? -eq 0 ]; then
+
+    printf "\n\nSuccessfully built base image with tag $tag\n\n"
+
+    for nodever in ${NODE[@]}
+    do
+
+      if [ "$nodever" == "--lts" ]; then tag="$phpver-nLTS"; fi;
+
+      printf "\Adding Node $nod image with \n - PHP $phpver with Node $nodever \n\n"
+
+      docker build \
       --build-arg VARIANT="$phpver" \
       --build-arg NODE_VERSION="$nodever" \
-      --build-arg DART_SASS_VERSION="$SASS" \
       --build-arg CREATE_DATE="$timestamp" \
-      --build-arg DRUPAL_CODER_VERSION="$DRUPAL_CODER_VERSION" \
-      -t drupal-devcontainer:"$tag" .
+      -t drupal-devcontainer:"$tag" \
+      -f Dockerfile.node .
     done
+  else
+    printf "\n\nFailed to build image with tag $tag\n\n"
+  fi
+
 done
 

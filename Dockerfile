@@ -13,7 +13,7 @@ ARG NODE_VERSION
 ARG DART_SASS_VERSION
 
 LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
-LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer, NodeJS, and Dart Sass"
+LABEL org.opencontainers.image.description="Base image for Drupal development without Node.js"
 LABEL org.opencontainers.image.authors="Majed Al-Chatti"
 LABEL org.opencontainers.image.source="https://github.com/alchatti/drupal-devcontainer-image"
 LABEL org.opencontainers.image.documentation="https://github.com/alchatti/drupal-devcontainer-image"
@@ -92,6 +92,11 @@ RUN unzip /tmp/zsh-syntax-highlighting.zip -d  /tmp/zsh-syntax-highlighting \
   && mv /tmp/zsh-syntax-highlighting/zsh-syntax-highlighting-master /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting \
   && chown vscode:vscode /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting
 
+# DART SASS
+ADD https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz /tmp/dart-sass.tar.gz
+RUN tar -C /opt/ -xzvf /tmp/dart-sass.tar.gz && \
+  ln -s /opt/dart-sass/sass /usr/local/bin/sass
+
 USER vscode
 
 RUN mkdir ~/.pnpm-store && mkdir ~/.acquia && \
@@ -114,11 +119,6 @@ RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
   sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
 
 USER root
-
-# DART SASS
-ADD https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz /tmp/dart-sass.tar.gz
-RUN tar -C /opt/ -xzvf /tmp/dart-sass.tar.gz && \
-  ln -s /opt/dart-sass/sass /usr/local/bin/sass
 
 # Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need
@@ -167,10 +167,5 @@ RUN set -eux; \
   apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
   rm -rf /var/lib/apt/lists/*
 #END
-
-
-
-# Node.js node, --lts, --lts-latest
-RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm -g i pnpm"; fi
 
 RUN rm -r /tmp/*
