@@ -21,13 +21,16 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build:
+    strategy:
+        matrix:
+          php_ver: [7, 8]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build Images
         run: |
           chmod +x ./build.sh
-          ./build.sh
+          ./build.sh ${{matrix.php_ver}}
       - name: Tag Images
         run: |
           chmod +x ./tag.sh
