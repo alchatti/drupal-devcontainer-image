@@ -40,16 +40,14 @@ for image in ${IMAGES[@]}; do
   for repo in ${REPOS[@]}; do
     tag=$repo/$image-$POSTFIX
 
-    docker tag $tag
-    echo "$tag"
+    docker tag $image $tag
+    echo "✔️  $tag"
 
     for tag in ${TAGS[@]}; do
-      tag=$repo/$IMAGE":${tag}-$POSTFIX"
-
+      tag="$repo/$IMAGE:${tag}-$POSTFIX"
       docker tag $image $tag
-      echo $tag
+      echo "✔️  $tag"
     done;
-
   done;
-
+    echo ""
 done;
