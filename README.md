@@ -1,6 +1,9 @@
 # Development Container for Drupal
 <sub>Document Version: 2022MAY26</sub>
 
+[![Build & Publish Images](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml/badge.svg?branch=main)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml)
+[![Update Container Description](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml/badge.svg)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml)
+
 Drupal development container based on [Microsoft PHP devcontainer image](https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list).
 
 The image is a base for a [devcontainer](https://code.visualstudio.com/docs/remote/containers) project which is currently _work in progress_ and it can used as a stand alone.
