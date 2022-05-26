@@ -109,7 +109,7 @@ With the following additional packages:
 	- [X] [Drupal Coder](https://www.drupal.org/project/coder)
 
 - Acquia tools
-	- [X] [Acquia CLI](https://docs.acquia.com/acquia-cli/)
+	- [X] [Acquia CLI](https://docs.acquia.com/acquia-cli/) requires PHP 8
 	- [X] [Acquia BLT launcher](https://github.com/acquia/blt-launcher/)
 
 - Front-End development
