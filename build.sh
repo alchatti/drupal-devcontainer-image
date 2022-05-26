@@ -58,7 +58,7 @@ do
     for nodever in ${NODE[@]}
     do
 
-      if [ "$nodever" == "--lts" ]; then tag="$phpver-nLTS"; fi;
+      if [ "$nodever" == "--lts" ]; then tag="$phpver-nLTS"; else tag="$phpver" ; fi;
 
       printf "\Adding Node $nod image with \n - PHP $phpver with Node $nodever \n\n"
 
