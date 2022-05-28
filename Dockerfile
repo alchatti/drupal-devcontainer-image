@@ -115,7 +115,8 @@ RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
   echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 # Start Apache on Zsh shell startup
-RUN echo "apache2ctl start" >> ~/.zshrc
+RUN echo "startup.sh" >> ~/.zshrc && \
+  echo "startup.sh" >> ~/.bashrc
 
 # Drupal Coder and phpcs Requirements
 RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
