@@ -142,6 +142,8 @@ RUN set -eux; \
   libpq-dev \
   libzip-dev \
   default-mysql-client \
+  gettext-base \
+  libpcre2-32-0 \
   ; \
   \
   docker-php-ext-configure gd \
@@ -164,10 +166,21 @@ RUN set -eux; \
   | cut -d: -f1 \
   | sort -u \
   | xargs -rt apt-mark manual \
+  ; \
+  \
+  # Fish Shell
+  apt install -y software-properties-common && \
+  add-apt-repository -y ppa:fish-shell/release-3 && \
+  apt install -y fish \
   ;
+
+# Copy fish config
+COPY ./config /home/vscode/.config/
+RUN chown -R vscode:vscode /home/vscode/.config
 
 # Clean Up
 RUN set -eux; \
+  apt remove -y software-properties-common ; \
   savedAptMark="$(apt-mark showmanual)"; \
   # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
   apt-mark auto '.*' > /dev/null; \
