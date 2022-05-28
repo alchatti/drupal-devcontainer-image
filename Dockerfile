@@ -42,17 +42,19 @@ RUN mkdir /mnt/files && \
 COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
 
 # Init Script
-COPY ./scripts/init.sh /usr/local/bin/
 COPY ./scripts/about.sh /usr/local/bin/
-COPY ./scripts/dump.sh /usr/local/bin/dump
-COPY ./scripts/drestore.sh /usr/local/bin/drestore
 COPY ./scripts/acli-dump.sh /usr/local/bin/acli-dump
+COPY ./scripts/drestore.sh /usr/local/bin/drestore
+COPY ./scripts/dump.sh /usr/local/bin/dump
+COPY ./scripts/init.sh /usr/local/bin/
+COPY ./scripts/startup.sh /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/init.sh && \
-  chmod +x /usr/local/bin/about.sh && \
-  chmod +x /usr/local/bin/dump && \
+RUN chmod +x /usr/local/bin/about.sh && \
+  chmod +x /usr/local/bin/acli-dump && \
   chmod +x /usr/local/bin/drestore && \
-  chmod +x /usr/local/bin/acli-dump
+  chmod +x /usr/local/bin/dump && \
+  chmod +x /usr/local/bin/init.sh && \
+  chmod +x /usr/local/bin/startup.sh
 
 # Drush Launcher global drush as fallback
 ENV DRUSH_LAUNCHER_FALLBACK /opt/drush
@@ -100,15 +102,17 @@ RUN tar -C /opt/ -xzvf /tmp/dart-sass.tar.gz && \
 
 USER vscode
 
-RUN mkdir ~/.pnpm-store && mkdir ~/.acquia && \
-  mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
-  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
   sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
   echo "exec \$SHELL -l"  >> ~/.bashrc
 
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
+
+RUN mkdir ~/.pnpm-store && mkdir ~/.acquia
+
+RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
+  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 # Start Apache on Zsh shell startup
 RUN echo "apache2ctl start" >> ~/.zshrc
