@@ -1,6 +1,13 @@
 # Development Container for Drupal
 <sub>Document Version: 2022MAY26</sub>
 
+![GitHub last commit](https://img.shields.io/github/last-commit/alchatti/drupal-devcontainer-image?style=for-the-badge)
+![Docker Pulls](https://img.shields.io/docker/pulls/alchatti/drupal-devcontainer?style=for-the-badge)
+
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/7.4?label=7.4&logo=PHP)
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.0?label=8.0&logo=PHP)
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.1?label=8.1&logo=PHP)
+
 [![Build & Publish Images](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml/badge.svg?branch=main)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml)
 [![Update Container Description](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml/badge.svg)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml)
 
