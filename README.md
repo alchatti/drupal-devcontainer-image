@@ -6,35 +6,39 @@
 
 Drupal development container based on [Microsoft PHP devcontainer image](https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list).
 
-The image is a base for a [devcontainer](https://code.visualstudio.com/docs/remote/containers) project which is currently _work in progress_ and it can used as a stand alone.
-
 ## Usage
 
 > This section is work in progress.
 
-Dev feature are set for the container user `vscode` which is a none root user provided by the base image.
+The image is used for a [devcontainer](https://code.visualstudio.com/docs/remote/containers) project, currently _work in progress_ and it can used as a stand alone cli experience.
 
-To access the container `zsh` shell in interactive mode as `vscode`.
+Dev feature are set for the container user `vscode`, a none root user provided by the Microsoft base image.
 
-> Apache server will start as part of the zsh startup script using command `apache2ctl start`
+To access the container `fish` shell in interactive mode as `vscode`.
+
+> Apache server will start as part of the a startup script using command `apache2ctl start`
 
 ### Quick new Drupal site for testing
 
 Drupal can be installed with SQLite without the need for an additional database container.
 
-1. Initialize the container in interactive mode as `vscode` user with hostname `drupal-dev` using `zsh` shell.
+For best Dev experience, start the container as `vscode` user. Hostname `drupal-dev` can be changed to any other name.
+
+1. Start with virtual volume to persist to Drupal site, docker will auto create the volume `drupal-dev-html`.
 
 ```bash
-docker run -h "drupal-dev" -u "vscode" -it -p 80:80 alchatti/drupal-devcontainer:8 zsh
-```
-```bash
-# Removes container on exit `--rm`
-docker run -h "drupal-dev" -u "vscode" --rm -it -p 80:80 alchatti/drupal-devcontainer:8 zsh
+# to use zsh, replace `fish` with `zsh`
+docker run --rm -it \
+-h "drupal-dev" \
+-u "vscode" \
+-p 80:80 \
+-v "drupal-dev-html:/var/www/html" \
+alchatti/drupal-devcontainer:8.0 fish
 ```
 
-2. Once shell is loaded confirm the initialization & php version by visiting http://localhost, this will display `phpinfo()` details.
+2. Once shell is loaded confirm the initialization by visiting http://localhost, it is setup to show PHP information.
 
-3. To intiate Drupal 9 composer project, run `init.sh`, this script is based on [Acquia configuration](https://docs.acquia.com/cloud-platform/create/install/drupal9/).
+3. To intiate Drupal 9 using a composer project, run `init.sh`, this script is based on [Acquia configuration](https://docs.acquia.com/cloud-platform/create/install/drupal9/).
 
 ```bash
 # vscode @ drupal-devcontainer in /var/www/html
@@ -43,32 +47,32 @@ init.sh
 
 4. Once the script finishes visit http://localhost, to start the Drupal setup and complete the steps.
 
-5. To exit the container and stop the service, type
+5. For a self contained demo, use the SQLite database option.
+
+6. To exit the container and stop the service, type
 
 ```bash
 exit
 ```
 
+8. To delete the volume, type
+
+```bash
+docker volume rm drupal-dev-html
+```
+
 ### Additional usage options & flags
 
-- Change the zsh theme to 'blue-owl' by using environment variable `POSH_THEME_ENVIRONMENT`, for more theme options check [Oh My Posh theme](https://ohmyposh.dev/docs/themes).
+- Change the fish theme to 'blue-owl' by using environment variable `POSH_THEME_ENVIRONMENT`, for more theme options check [Oh My Posh theme](https://ohmyposh.dev/docs/themes).
 
 ```bash
-docker run -u "vscode" -e POSH_THEME_ENVIRONMENT='blue-owl' -it -p 80:80 alchatti/drupal-devcontainer:8 zsh
-```
-
-- Change Apache document root from `docroot` to `web` by using environment variable `APACHE_DOCUMENT_ROOT`. Check https://docs.docker.com/storage/bind-mounts/ for loading existing projects.
-
-```bash
-docker run -u "vscode" \
--e POSH_THEME_ENVIRONMENT='blue-owl' \
--e APACHE_DOCUMENT_ROOT='web' \
--it -p 80:80 alchatti/drupal-devcontainer:8 zsh
-```
-
-```bash
-# mv the container docroot to web
-mv docroot web
+docker run --rm -it \
+-e POSH_THEME_ENVIRONMENT='blue-owl'
+-h "drupal-dev" \
+-u "vscode" \
+-p 80:80 \
+-v "drupal-dev-html:/var/www/html" \
+alchatti/drupal-devcontainer:8.0 fish
 ```
 
 ## Tags
@@ -77,12 +81,14 @@ To target a specific version build the tag is configured as follow `$php-n$nodeJ
 
 Example
 
-- `8`: PHP 8 with latest Node.js, Sass and Composer at build.
-- `8-n18`: PHP 8 with latest Node.js 18 and latest Sass and Composer at build.
-- `8-n16LTS`: PHP 8 with Node.js LTS 16 and latest Sass and Composer at build.
+- `8.0`: PHP 8.0 with latest Node.js, Sass and Composer at build.
+- `8.0-nLTS`: PHP 8.0 with latest Node.js LTS, Sass and Composer at build.
+- `8.0-T220530`: PHP 8.0 with latest Node.js, built on May 30, 2022.
+- `8.0-n18`: PHP 8.0 with Node.js 18 and latest Sass and Composer at build.
+- `8.0-n16LTS`: PHP 8.0 with Node.js LTS 16 and latest Sass and Composer at build.
 - `8.1.4-n18.2.0-s1.51.0-c2.3.4-npm8.9.0`: PHP 8.1.4 with Node.js 18.2.0, Sass 1.51.0, Composer 2.3.4 and npm 8.9.0 at build.
 
-Replace `8` with `7` to target PHP 7, you can also use `8.1` or `7.4`.
+Replace `8` with `7` to target PHP 7, you can also use `7.4`, `8.0`, `8.1`.
 
 ## Image
 
@@ -94,8 +100,6 @@ The image is targeting the latest 7 & 8 versions of PHP with latest Node.js/lts 
 about | jq
 # create a time stamped sql dump of the database using drush and store it under /var/www/html/dump
 dump.sh
-# restore an sql dump from file using drush
-drestore.sh $file
 # Download latest acquia cloud database backup using acli
 acli-dump.sh
 ```
@@ -110,6 +114,7 @@ With the following additional packages:
 	- [X] [Drush launcher](https://github.com/drush-ops/drush-launcher).
 	- [X] [Drush 8](https://www.drush.org/latest/) as global fallback and for Drupal 7.
 	- [X] [Drupal Coder](https://www.drupal.org/project/coder)
+	- [X] [Drupal Console launcher](https://www.drupal.org/project/console), best experience with 7.4 & 8.0.
 
 - Acquia tools
 	- [X] [Acquia CLI](https://docs.acquia.com/acquia-cli/) requires PHP 8
@@ -120,16 +125,17 @@ With the following additional packages:
 	- [X] [Dart Sass](https://github.com/sass/dart-sass)
 
 - Terminal enhancements:
-	- [Oh My Posh](https://ohmyposh.dev/) for Zsh
 	- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
 	- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
+	- [fish](https://fishshell.com/)
+	- [Oh My Posh](https://ohmyposh.dev/) for Zsh & Fish
 
 ### Environment variables
 
 The following are environment variables for customization.
 
 ```bash
-# Zsh theme
+# Shell Oh My Posh Theme
 ENV POSH_THEME_ENVIRONMENT "ys"
 # ENV Defaults fpr APACHE
 ENV APACHE_SERVER_NAME="localhost"
