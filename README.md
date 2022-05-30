@@ -4,6 +4,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/alchatti/drupal-devcontainer-image?style=for-the-badge)
 ![Docker Pulls](https://img.shields.io/docker/pulls/alchatti/drupal-devcontainer?style=for-the-badge)
 
+![Docker Stars](https://badgen.net/docker/stars/alchatti/drupal-devcontainer?icon=docker&label=stars)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/7.4?label=7.4&logo=PHP)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.0?label=8.0&logo=PHP)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.1?label=8.1&logo=PHP)
