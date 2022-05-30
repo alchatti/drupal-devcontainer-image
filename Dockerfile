@@ -9,7 +9,6 @@ FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
 ARG VARIANT
 ARG CREATE_DATE
 ARG DRUPAL_CODER_VERSION
-ARG NODE_VERSION
 ARG DART_SASS_VERSION
 
 LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
