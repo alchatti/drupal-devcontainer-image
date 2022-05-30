@@ -12,6 +12,7 @@ vr_npm=$(npm -v)
 vr_sass=$(sass --version)
 vr_composer=$(composer --version | awk '{print $3}')
 
+TAG="$vr_php_major.$vr_php_minor"
 
 if [ $vr_node_lts == "undefined" ]
 then
@@ -19,14 +20,14 @@ then
 
 else
 	TAG_N="n${vr_node_major}LTS"
+	TAG="$TAG-nLTS"
 fi;
 
-TAG_S="$vr_php_major-$TAG_N"
-TAG_L="$vr_php_major.$vr_php_minor-$TAG_N"
-TAG=$vr_php-n$vr_node-s$vr_sass-c$vr_composer-npm$vr_npm
+TAG_S="$vr_php_major.$vr_php_minor-$TAG_N"
+TAG_L=$vr_php-n$vr_node-s$vr_sass-c$vr_composer-npm$vr_npm
 
 case $1 in
 	s) echo $TAG_S;;
 	l) echo $TAG_L;;
-	*) echo '{ "TAG":"'$vr_php_major.$vr_php_minor'", "TAG_S": "'$TAG_S'", "TAG_L": "'$TAG_L'" , "TAG_F": "'$TAG'"}' ;;
+	*) echo '{ "TAG":"'$TAG'", "TAG_S": "'$TAG_S'", "TAG_L": "'$TAG_L'"}' ;;
 esac
