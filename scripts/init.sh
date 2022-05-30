@@ -24,6 +24,10 @@ then
 	# composer require drush/drush:^10.2 drupal/mysql56 --no-update
 	composer require --no-update drush/drush:^11
 
+	composer require --no-update drupal/console:~1.0 \
+	--prefer-dist \
+	--optimize-autoloader
+
 	# composer require acquia/blt --no-update
 
 	mv /tmp/drupal/* $WORKSPACE_ROOT

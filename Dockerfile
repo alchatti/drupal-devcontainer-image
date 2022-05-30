@@ -74,6 +74,10 @@ RUN chmod +rx /usr/local/bin/acli
 ADD https://github.com/acquia/blt-launcher/releases/latest/download/blt.phar /usr/local/bin/blt
 RUN chmod +rx /usr/local/bin/blt
 
+# Drupal Console Launcher
+ADD https://github.com/hechoendrupal/drupal-console-launcher/releases/latest/download/drupal.phar /usr/local/bin/drupal
+RUN chmod +rx /usr/local/bin/drupal
+
 # Oh My Posh
 ADD https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 /usr/local/bin/oh-my-posh
 ADD https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip /opt/themes.zip
