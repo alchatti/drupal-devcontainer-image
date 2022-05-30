@@ -34,8 +34,9 @@ RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /et
 RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 
 # Drupal filesystem
-RUN mkdir /mnt/files
-RUN chown vscode:vscode /mnt/files
+RUN mkdir /mnt/files && \
+  chown -R www-data:www-data /mnt/files && \
+  chmod -R 775 /mnt/files
 
 # PHP Development settings overwrite
 COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
@@ -128,8 +129,6 @@ RUN set -eux; \
   a2enmod rewrite; \
   fi; \
   \
-  savedAptMark="$(apt-mark showmanual)"; \
-  \
   apt update; \
   apt install -y --no-install-recommends \
   libfreetype6-dev \
@@ -153,19 +152,21 @@ RUN set -eux; \
   zip \
   ; \
   \
-  # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-  apt-mark auto '.*' > /dev/null; \
-  apt-mark manual $savedAptMark; \
   ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
   | awk '/=>/ { print $3 }' \
   | sort -u \
   | xargs -r dpkg-query -S \
   | cut -d: -f1 \
   | sort -u \
-  | xargs -rt apt-mark manual; \
-  \
-  apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-  rm -rf /var/lib/apt/lists/*
-#END
+  | xargs -rt apt-mark manual \
+  ;
 
-RUN rm -r /tmp/*
+# Clean Up
+RUN set -eux; \
+  savedAptMark="$(apt-mark showmanual)"; \
+  # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+  apt-mark auto '.*' > /dev/null; \
+  apt-mark manual $savedAptMark; \
+  apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+  rm -rf /var/lib/apt/lists/*; \
+  rm -r /tmp/*
