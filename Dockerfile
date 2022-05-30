@@ -9,7 +9,6 @@ FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
 ARG VARIANT
 ARG CREATE_DATE
 ARG DRUPAL_CODER_VERSION
-ARG NODE_VERSION
 ARG DART_SASS_VERSION
 
 LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
@@ -34,24 +33,27 @@ RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /et
 RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 
 # Drupal filesystem
-RUN mkdir /mnt/files
-RUN chown vscode:vscode /mnt/files
+RUN mkdir /mnt/files && \
+  chown -R www-data:www-data /mnt/files && \
+  chmod -R 775 /mnt/files
 
 # PHP Development settings overwrite
 COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
 
 # Init Script
-COPY ./scripts/init.sh /usr/local/bin/
 COPY ./scripts/about.sh /usr/local/bin/
-COPY ./scripts/dump.sh /usr/local/bin/dump
-COPY ./scripts/drestore.sh /usr/local/bin/drestore
 COPY ./scripts/acli-dump.sh /usr/local/bin/acli-dump
+COPY ./scripts/drestore.sh /usr/local/bin/drestore
+COPY ./scripts/dump.sh /usr/local/bin/dump
+COPY ./scripts/init.sh /usr/local/bin/
+COPY ./scripts/startup.sh /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/init.sh && \
-  chmod +x /usr/local/bin/about.sh && \
-  chmod +x /usr/local/bin/dump && \
+RUN chmod +x /usr/local/bin/about.sh && \
+  chmod +x /usr/local/bin/acli-dump && \
   chmod +x /usr/local/bin/drestore && \
-  chmod +x /usr/local/bin/acli-dump
+  chmod +x /usr/local/bin/dump && \
+  chmod +x /usr/local/bin/init.sh && \
+  chmod +x /usr/local/bin/startup.sh
 
 # Drush Launcher global drush as fallback
 ENV DRUSH_LAUNCHER_FALLBACK /opt/drush
@@ -99,9 +101,6 @@ RUN tar -C /opt/ -xzvf /tmp/dart-sass.tar.gz && \
 
 USER vscode
 
-RUN mkdir ~/.pnpm-store && mkdir ~/.acquia && \
-  mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
-  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
   sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
@@ -109,8 +108,14 @@ RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
 
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
+RUN mkdir ~/.pnpm-store && mkdir ~/.acquia
+
+RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
+  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
+
 # Start Apache on Zsh shell startup
-RUN echo "apache2ctl start" >> ~/.zshrc
+RUN echo "startup.sh" >> ~/.zshrc && \
+  echo "startup.sh" >> ~/.bashrc
 
 # Drupal Coder and phpcs Requirements
 RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
@@ -128,8 +133,6 @@ RUN set -eux; \
   a2enmod rewrite; \
   fi; \
   \
-  savedAptMark="$(apt-mark showmanual)"; \
-  \
   apt update; \
   apt install -y --no-install-recommends \
   libfreetype6-dev \
@@ -138,6 +141,8 @@ RUN set -eux; \
   libpq-dev \
   libzip-dev \
   default-mysql-client \
+  gettext-base \
+  libpcre2-32-0 \
   ; \
   \
   docker-php-ext-configure gd \
@@ -153,19 +158,32 @@ RUN set -eux; \
   zip \
   ; \
   \
-  # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-  apt-mark auto '.*' > /dev/null; \
-  apt-mark manual $savedAptMark; \
   ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
   | awk '/=>/ { print $3 }' \
   | sort -u \
   | xargs -r dpkg-query -S \
   | cut -d: -f1 \
   | sort -u \
-  | xargs -rt apt-mark manual; \
+  | xargs -rt apt-mark manual \
+  ; \
   \
-  apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-  rm -rf /var/lib/apt/lists/*
-#END
+  # Fish Shell
+  apt install -y software-properties-common && \
+  add-apt-repository -y ppa:fish-shell/release-3 && \
+  apt install -y fish \
+  ;
 
-RUN rm -r /tmp/*
+# Copy fish config
+COPY ./config /home/vscode/.config/
+RUN chown -R vscode:vscode /home/vscode/.config
+
+# Clean Up
+RUN set -eux; \
+  apt remove -y software-properties-common ; \
+  savedAptMark="$(apt-mark showmanual)"; \
+  # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+  apt-mark auto '.*' > /dev/null; \
+  apt-mark manual $savedAptMark; \
+  apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+  rm -rf /var/lib/apt/lists/*; \
+  rm -r /tmp/*
