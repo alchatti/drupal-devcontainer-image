@@ -18,7 +18,7 @@ Drupal development container based on [Microsoft PHP devcontainer image](https:/
 
 > This section is work in progress.
 
-The image is used for a [devcontainer](https://code.visualstudio.com/docs/remote/containers) project, currently _work in progress_ and it can used as a stand alone cli experience.
+The image is used for a [devcontainer](https://code.visualstudio.com/docs/remote/containers) base, that is available at [alchatti/drupal-devcontainer](https://github.com/alchatti/drupal-devcontainer) and it can also be used as a stand alone.
 
 Dev feature are set for the container user `vscode`, a none root user provided by the Microsoft base image.
 
