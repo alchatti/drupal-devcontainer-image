@@ -21,13 +21,12 @@ do
     esac
 done
 
+[ -d ".build" ] || mkdir ".build"
+
 if [ -f ".build/fish.deb" ]; then
   printf "📦 Using downloaded Fish packgage\n"
 else
-  printf "⚡ Creating build directory\n"
-  rm -rf .build
-  mkdir -p .build
-  printf "⬇️ Downloading Fish ${FISH_URL}\n"
+  printf "📦 Downloading Fish ${FISH_URL}\n"
   curl -L ${FISH_URL} -o .build/fish.deb
   printf "✔️ Downloading Fish Completed\n"
 fi
@@ -58,6 +57,14 @@ do
   printf "\nBuilding image with \n - PHP $phpver - dart-sass $SASS \n\n"
 
   tag=$phpver
+
+  if [ $phpver == "7.4" ]; then
+    printf "📦 Downloaded Acqui CLI for PHP 7.4\n"
+    curl -L https://github.com/acquia/cli/releases/download/1.30.1/acli.phar -o .build/acli.phar
+  else
+    printf "📦 Downloaded Acqui CLI for PHP 8.0 or later\n"
+    curl -L https://github.com/acquia/cli/releases/latest/download/acli.phar -o .build/acli.phar
+  fi
 
   docker build \
     --build-arg VARIANT="$phpver" \

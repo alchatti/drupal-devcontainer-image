@@ -67,7 +67,7 @@ ADD https://github.com/drush-ops/drush/releases/download/8.4.8/drush.phar /opt/d
 RUN chmod +rx /opt/drush
 
 # Add Acquia Cli
-ADD https://github.com/acquia/cli/releases/latest/download/acli.phar /usr/local/bin/acli
+COPY .build/acli.phar /usr/local/bin/acli
 RUN chmod +rx /usr/local/bin/acli
 
 # Acquia BLT Launcher
