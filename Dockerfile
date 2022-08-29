@@ -169,13 +169,11 @@ RUN set -eux; \
   | cut -d: -f1 \
   | sort -u \
   | xargs -rt apt-mark manual \
-  ; \
-  \
-  # Fish Shell
-  apt install -y software-properties-common && \
-  add-apt-repository -y ppa:fish-shell/release-3 && \
-  apt install -y fish \
   ;
+
+# Fish Shell Manual Installation
+COPY .build/fish.deb /tmp/fish.deb
+RUN sudo dpkg -i /tmp/fish.deb
 
 # Copy fish config
 COPY ./config /home/vscode/.config/
@@ -183,11 +181,11 @@ RUN chown -R vscode:vscode /home/vscode/.config
 
 # Clean Up
 RUN set -eux; \
-  apt remove -y software-properties-common ; \
   savedAptMark="$(apt-mark showmanual)"; \
   # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
   apt-mark auto '.*' > /dev/null; \
   apt-mark manual $savedAptMark; \
   apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-  rm -rf /var/lib/apt/lists/*; \
-  rm -r /tmp/*
+  rm -rf /var/lib/apt/lists/* \
+  rm -r /tmp/*\
+  ;
