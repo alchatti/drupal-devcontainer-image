@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# Manual download of the latest Fish version
+# https://software.opensuse.org/download.html?project=shells%3Afish%3Arelease%3A3&package=fish
+FISH_URL="https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/amd64/fish_3.5.1-1_amd64.deb"
+
 DRUPAL_CODER_VERSION="8.3.13" # version is specified due to bug https://www.drupal.org/project/coder/issues/3262291
 
 print_usage() {
-  printf "\nBuild script usage: -p phpVer -s sassVer -n nodeJSVer\n\nIf no version is provided the latest will be used\n\n# For list of tags vsist https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list\n\n"
+  printf "\nBuild script usage: -p phpVer -s sassVer -n nodeJSVer -f fishVersion\n\nIf no version is provided the latest will be used\n\n# For list of tags vsist https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list\n\n"
 }
 
 while getopts p:s:n: flag;
@@ -16,6 +20,17 @@ do
             exit 1 ;;
     esac
 done
+
+if [ -f ".build/fish.deb" ]; then
+  printf "📦 Using downloaded Fish packgage\n"
+else
+  printf "⚡ Creating build directory\n"
+  rm -rf .build
+  mkdir -p .build
+  printf "⬇️ Downloading Fish ${FISH_URL}\n"
+  curl -L ${FISH_URL} -o .build/fish.deb
+  printf "✔️ Downloading Fish Completed\n"
+fi
 
 if [ -z "$PHP" ]
 then
@@ -74,4 +89,3 @@ do
   fi
 
 done
-
