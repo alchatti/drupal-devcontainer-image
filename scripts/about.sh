@@ -9,7 +9,6 @@ IFS=. read vr_node_major vr_node_minor <<<"${vr_node}"
 
 vr_node_lts=$(node -pe process.release.lts)
 vr_npm=$(npm -v)
-vr_sass=$(sass --version)
 vr_composer=$(composer --version | awk '{print $3}')
 
 TAG="$vr_php_major.$vr_php_minor"
@@ -24,7 +23,7 @@ else
 fi;
 
 TAG_S="$vr_php_major.$vr_php_minor-$TAG_N"
-TAG_L=$vr_php-n$vr_node-s$vr_sass-c$vr_composer-npm$vr_npm
+TAG_L=$vr_php-n$vr_node-c$vr_composer-npm$vr_npm
 
 case $1 in
 	s) echo $TAG_S;;
