@@ -4,15 +4,15 @@
 
 ARG VARIANT
 
-FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/php:0-${VARIANT}-bullseye
 
 ARG VARIANT
 ARG CREATE_DATE
-ARG DRUPAL_CODER_VERSION
-ARG DART_SASS_VERSION
+ARG NODE_VERSION
+ARG TARGETARCH
 
-LABEL org.opencontainers.image.title="Drupal Devcontainer Image"
-LABEL org.opencontainers.image.description="Base image for Drupal development without Node.js"
+LABEL org.opencontainers.image.title="Drupal Devcontainer Image with Node"
+LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer and Node.js"
 LABEL org.opencontainers.image.authors="Majed Al-Chatti"
 LABEL org.opencontainers.image.source="https://github.com/alchatti/drupal-devcontainer-image"
 LABEL org.opencontainers.image.documentation="https://github.com/alchatti/drupal-devcontainer-image"
@@ -127,7 +127,9 @@ RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor
 RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
   sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
 
-USER root
+# Copy fish config
+COPY ./config /home/vscode/.config/
+RUN chown -R vscode:vscode /home/vscode/.config
 
 # Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need
@@ -147,6 +149,7 @@ RUN set -eux; \
   default-mysql-client \
   gettext-base \
   libpcre2-32-0 \
+  build-essential \
   ; \
   \
   docker-php-ext-configure gd \
@@ -171,13 +174,34 @@ RUN set -eux; \
   | xargs -rt apt-mark manual \
   ;
 
-# Fish Shell Manual Installation
-COPY .build/fish.deb /tmp/fish.deb
-RUN sudo dpkg -i /tmp/fish.deb
+ADD https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/${TARGETARCH}/fish_3.6.0-1_${TARGETARCH}.deb /tmp/fish.deb
+RUN dpkg -i /tmp/fish.deb
 
-# Copy fish config
-COPY ./config /home/vscode/.config/
-RUN chown -R vscode:vscode /home/vscode/.config
+USER vscode
+
+RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
+  sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
+  echo "exec \$SHELL -l"  >> ~/.bashrc
+
+RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
+
+RUN mkdir ~/.acquia
+
+RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
+  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
+
+# Drupal Coder and phpcs Requirements
+RUN composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+RUN composer global config --no-plugins allow-plugins.cweagans/composer-patches true
+RUN composer global require drupal/coder
+RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
+  sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
+
+
+USER root
+
+RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm install -g npm@latest"; fi
 
 # Clean Up
 RUN set -eux; \
