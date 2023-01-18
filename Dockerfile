@@ -67,25 +67,13 @@ ADD https://github.com/drush-ops/drush/releases/download/8.4.8/drush.phar /opt/d
 RUN chmod +rx /opt/drush
 
 # Add Acquia Cli
-COPY .build/acli.phar /usr/local/bin/acli
+ADD https://github.com/acquia/cli/releases/latest/download/acli.phar /usr/local/bin/acli
 RUN chmod +rx /usr/local/bin/acli
 
 # Acquia BLT Launcher
 ADD https://github.com/acquia/blt-launcher/releases/latest/download/blt.phar /usr/local/bin/blt
 RUN chmod +rx /usr/local/bin/blt
 
-# Drupal Console Launcher
-ADD https://github.com/hechoendrupal/drupal-console-launcher/releases/latest/download/drupal.phar /usr/local/bin/drupal
-RUN chmod +rx /usr/local/bin/drupal
-
-# Oh My Posh
-ADD https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 /usr/local/bin/oh-my-posh
-ADD https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip /opt/themes.zip
-
-RUN chmod +x /usr/local/bin/oh-my-posh && \
-  unzip /opt/themes.zip -d /opt/.poshthemes && \
-  rm /opt/themes.zip && \
-  chmod o+r /opt/.poshthemes/*.json
 
 #Zsh Plugins
 ADD https://github.com/zsh-users/zsh-autosuggestions/archive/refs/heads/master.zip /tmp/zsh-autosuggestions.zip
@@ -98,34 +86,15 @@ RUN unzip /tmp/zsh-syntax-highlighting.zip -d  /tmp/zsh-syntax-highlighting \
   && mv /tmp/zsh-syntax-highlighting/zsh-syntax-highlighting-master /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting \
   && chown vscode:vscode /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting
 
-# DART SASS
-ADD https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz /tmp/dart-sass.tar.gz
-RUN tar -C /opt/ -xzvf /tmp/dart-sass.tar.gz && \
-  ln -s /opt/dart-sass/sass /usr/local/bin/sass
+# Oh My Posh
+ADD https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-${TARGETARCH} /usr/local/bin/oh-my-posh
+RUN sudo chmod +x /usr/local/bin/oh-my-posh
 
-USER vscode
-
-
-RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
-  sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
-  echo "exec \$SHELL -l"  >> ~/.bashrc
-
-RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
-
-RUN mkdir ~/.pnpm-store && mkdir ~/.acquia
-
-RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
-  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
-
-# Start Apache on Zsh shell startup
-RUN echo "startup.sh" >> ~/.zshrc && \
-  echo "startup.sh" >> ~/.bashrc
-
-# Drupal Coder and phpcs Requirements
-RUN composer global require drupal/coder ${DRUPAL_CODER_VERSION}
-RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
-  sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
+ADD https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip /opt/themes.zip
+RUN chmod +x /usr/local/bin/oh-my-posh && \
+  unzip /opt/themes.zip -d /opt/.poshthemes && \
+  rm /opt/themes.zip && \
+  chmod o+r /opt/.poshthemes/*.json
 
 # Copy fish config
 COPY ./config /home/vscode/.config/
