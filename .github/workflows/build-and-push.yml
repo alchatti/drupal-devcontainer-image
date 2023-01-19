@@ -57,3 +57,5 @@ jobs:
           tags: |
             alchatti/drupal-devcontainer:${{ matrix.php_ver }}-${{ steps.date.outputs.date }}
             alchatti/drupal-devcontainer:${{ matrix.php_ver }}
+            ghcr.io/alchatti/drupal-devcontainer:${{ matrix.php_ver }}-${{ steps.date.outputs.date }}
+            ghcr.io/alchatti/drupal-devcontainer:${{ matrix.php_ver }}
