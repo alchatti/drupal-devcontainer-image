@@ -174,6 +174,6 @@ The workflow is set on schedule and triggered on push to the main branch. It als
 - feat: PHP 8.1 support and deprecated PHP 8.0
 - feat: Apple Silicon `arm64` support for both PHP 8.1 and 7.4
 - feat: Drupal 10 support and updated the installation script.
+- feat: removed Drupal Console as it is deprecated.
+- feat: GitHub action workflow update to support multiple architecture, tag and push the image.
 - fix: `fish` with `nvm`.
-- chore: removed Drupal Console as it is deprecated.
-- ci: GitHub action workflow update to support multiple architecture, tag and push the image.
