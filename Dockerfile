@@ -162,7 +162,6 @@ RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
 
 # Drupal Coder and phpcs Requirements
 RUN composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-RUN composer global config --no-plugins allow-plugins.cweagans/composer-patches true
 RUN composer global require drupal/coder
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
