@@ -28,6 +28,7 @@ ENV WR ${WORKSPACE_ROOT}
 # Default theme
 ENV POSH_THEME_ENVIRONMENT "ys"
 
+RUN echo "${CREATE_DATE}" >> /var/.buildInfo
 
 # Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
