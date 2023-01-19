@@ -18,15 +18,16 @@ then
 	cd /tmp/drupal
 
 	# Source https://docs.acquia.com/cloud-platform/create/install/drupal9/
-	composer create-project --no-install drupal/recommended-project:^9.0.0 .
+	composer create-project --no-install drupal/recommended-project:^10 .
 	sed -i'.original' 's/web\//docroot\//g' composer.json && rm composer.json.original
 
 	# composer require drush/drush:^10.2 drupal/mysql56 --no-update
 	composer require --no-update drush/drush:^11
 
-	composer require --no-update drupal/console:~1.0 \
-	--prefer-dist \
-	--optimize-autoloader
+	# Drupal Modules
+	composer require --no-update drupal/stage_file_proxy
+    composer require --no-update cweagans/composer-patches
+	composer config --no-plugins allow-plugins.cweagans/composer-patches true
 
 	# composer require acquia/blt --no-update
 
@@ -38,5 +39,5 @@ then
 
 	yes | composer update
 else
-	printf "Found more than one file in $DIR, skipping installation\n\nUse >> rm $DIR/* >> to empty the directory\n"
+	printf "Found more than one file in $DIR, skipping installation\n\nUse >> rm -r $DIR/* >> to empty the directory\n"
 fi;
