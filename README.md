@@ -3,7 +3,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/alchatti/drupal-devcontainer-image?style=for-the-badge)
 ![Docker Pulls](https://img.shields.io/docker/pulls/alchatti/drupal-devcontainer?style=for-the-badge)
 
-![Docke (tag)](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+![Docker (tag)](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 ![PHP (tag)](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![NodeJS (tag)](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Drupal (tag)](https://img.shields.io/badge/Drupal-0678BE?style=for-the-badge&logo=drupal&logoColor=white)
@@ -13,7 +13,6 @@
 
 ![Docker Stars](https://badgen.net/docker/stars/alchatti/drupal-devcontainer?icon=docker&label=stars)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/7.4?label=7.4&logo=PHP)
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.0?label=8.0&logo=PHP)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.1?label=8.1&logo=PHP)
 
 [![Build & Publish Images](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml/badge.svg?branch=main)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml)
