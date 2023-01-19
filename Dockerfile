@@ -114,9 +114,11 @@ RUN set -eux; \
   apt install -y --no-install-recommends \
   libfreetype6-dev \
   libjpeg-dev \
+  zlib1g-dev \
   libpng-dev \
   libpq-dev \
   libzip-dev \
+  libwebp-dev \
   default-mysql-client \
   gettext-base \
   libpcre2-32-0 \
@@ -126,6 +128,7 @@ RUN set -eux; \
   docker-php-ext-configure gd \
   --with-freetype \
   --with-jpeg=/usr \
+  --with-webp \
   ; \
   \
   docker-php-ext-install -j "$(nproc)" \
