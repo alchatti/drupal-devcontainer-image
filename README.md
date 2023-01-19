@@ -31,7 +31,7 @@ Dev feature are set for the container user `vscode`, a none root user provided b
 
 > Apache server will start as part of the a startup script using command `apache2ctl start`
 
-### Quick new Drupal site for testing
+### Quick Start: Self contained Drupal site for testing & Demonstration
 
 Drupal 10 can be installed with SQLite without the need for an additional database container.
 
@@ -48,7 +48,7 @@ docker run --rm -it \
 alchatti/drupal-devcontainer:8.1 fish
 ```
 
-1. Once the container finishes intializing visit <http://localhost> to show PHP information page.
+2. Once the container finishes intializing visit <http://localhost> to show PHP information page.
 
 1. You can use `init.sh` command to create a new Drupal 10 site. Use `SQLite` as the database option for a self contained image. This script is based on [Acquia configuration](https://docs.acquia.com/cloud-platform/create/install/drupal9/). You can also setup Drupal your self.
 
@@ -56,9 +56,15 @@ alchatti/drupal-devcontainer:8.1 fish
 init.sh
 ```
 
-1. Once the Drupal is installed visit http://localhost, to start setting up Drupal.
+4. Once the Drupal is installed visit http://localhost, to start setting up Drupal.
 
-1. For a self contained demo, use the SQLite database option.
+1. For demo purpose, select `Demo: Umami Food Magazine (Experimental)` as installation profile.
+
+1. For database use the `SQLite` and the Database file as default `sites/default/files/.ht.sqlite`.
+
+1. Configure the site by setting up the `admin` user name and password
+
+1. visit <http://localhost> to show the Drupal site.
 
 1. To exit the container and stop the service, type
 
@@ -66,7 +72,7 @@ init.sh
 exit
 ```
 
-1. To delete the create volume and start fresh, type
+- To delete the created volume and start fresh, type
 
 ```bash
 docker volume rm drupal-dev-html
