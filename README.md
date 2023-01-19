@@ -11,8 +11,6 @@
 ![Apple silicon (tag)](https://img.shields.io/badge/apple%20silicon-333333?style=for-the-badge&logo=apple&logoColor=white)
 ![VS Code (tag)](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
 
-
-
 ![Docker Stars](https://badgen.net/docker/stars/alchatti/drupal-devcontainer?icon=docker&label=stars)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/7.4?label=7.4&logo=PHP)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.0?label=8.0&logo=PHP)
@@ -21,61 +19,54 @@
 [![Build & Publish Images](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml/badge.svg?branch=main)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml)
 [![Update Container Description](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml/badge.svg)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml)
 
-
-
-
 Drupal development container based on [Microsoft PHP devcontainer image](https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list).
 
 ## Usage
 
-> This section is work in progress.
+[Devcontainer](https://code.visualstudio.com/docs/remote/containers) image is to be used for development inside a container. This image is loaded with the tools required to develop a Drupal & NodeJs project.
 
-The image is used for a [devcontainer](https://code.visualstudio.com/docs/remote/containers) base, that is available at [alchatti/drupal-devcontainer](https://github.com/alchatti/drupal-devcontainer) and it can also be used as a stand alone.
+It can be used as standalone and it is recommended to use [alchatti/drupal-devcontainer](https://github.com/alchatti/drupal-devcontainer) with VS Code for an interactive development experience with required extentions installed.
 
 Dev feature are set for the container user `vscode`, a none root user provided by the Microsoft base image.
-
-To access the container `fish` shell in interactive mode as `vscode`.
 
 > Apache server will start as part of the a startup script using command `apache2ctl start`
 
 ### Quick new Drupal site for testing
 
-Drupal can be installed with SQLite without the need for an additional database container.
+Drupal 10 can be installed with SQLite without the need for an additional database container.
 
 For best Dev experience, start the container as `vscode` user. Hostname `drupal-dev` can be changed to any other name.
 
-1. Start with virtual volume to persist to Drupal site, docker will auto create the volume `drupal-dev-html`.
+1. To start a container in interactive mode and remove once exited, docker will auto create the volume `drupal-dev-html` to persist the site installation. type
 
 ```bash
-# to use zsh, replace `fish` with `zsh`
 docker run --rm -it \
 -h "drupal-dev" \
 -u "vscode" \
 -p 80:80 \
 -v "drupal-dev-html:/var/www/html" \
-alchatti/drupal-devcontainer:8.0 fish
+alchatti/drupal-devcontainer:8.1 fish
 ```
 
-2. Once shell is loaded confirm the initialization by visiting http://localhost, it is setup to show PHP information.
+1. Once the container finishes intializing visit <http://localhost> to show PHP information page.
 
-3. To intiate Drupal 9 using a composer project, run `init.sh`, this script is based on [Acquia configuration](https://docs.acquia.com/cloud-platform/create/install/drupal9/).
+1. You can use `init.sh` command to create a new Drupal 10 site. Use `SQLite` as the database option for a self contained image. This script is based on [Acquia configuration](https://docs.acquia.com/cloud-platform/create/install/drupal9/). You can also setup Drupal your self.
 
 ```bash
-# vscode @ drupal-devcontainer in /var/www/html
 init.sh
 ```
 
-4. Once the script finishes visit http://localhost, to start the Drupal setup and complete the steps.
+1. Once the Drupal is installed visit http://localhost, to start setting up Drupal.
 
-5. For a self contained demo, use the SQLite database option.
+1. For a self contained demo, use the SQLite database option.
 
-6. To exit the container and stop the service, type
+1. To exit the container and stop the service, type
 
 ```bash
 exit
 ```
 
-8. To delete the volume, type
+1. To delete the create volume and start fresh, type
 
 ```bash
 docker volume rm drupal-dev-html
@@ -83,7 +74,7 @@ docker volume rm drupal-dev-html
 
 ### Additional usage options & flags
 
-- Change the fish theme to 'blue-owl' by using environment variable `POSH_THEME_ENVIRONMENT`, for more theme options check [Oh My Posh theme](https://ohmyposh.dev/docs/themes).
+- Change the shell to `zsh` and the theme to 'blue-owl' by using environment variable `POSH_THEME_ENVIRONMENT`, for more theme options check [Oh My Posh theme](https://ohmyposh.dev/docs/themes).
 
 ```bash
 docker run --rm -it \
@@ -92,28 +83,25 @@ docker run --rm -it \
 -u "vscode" \
 -p 80:80 \
 -v "drupal-dev-html:/var/www/html" \
-alchatti/drupal-devcontainer:8.0 fish
+alchatti/drupal-devcontainer:8.1 zsh
 ```
 
 ## Tags
 
-To target a specific version build the tag is configured as follow `$php-n$nodeJs-s$sass-c$composer-$npm`
+To target a specific version build the tag is configured as follow `$php-$datetime`
 
-Example
+Available tags:
 
-- `8.0`: PHP 8.0 with latest Node.js, Sass and Composer at build.
-- `8.0-nLTS`: PHP 8.0 with latest Node.js LTS, Sass and Composer at build.
-- `8.0-T220530`: PHP 8.0 with latest Node.js, built on May 30, 2022.
-- `8.0-n18`: PHP 8.0 with Node.js 18 and latest Sass and Composer at build.
-- `8.0-n16LTS`: PHP 8.0 with Node.js LTS 16 and latest Sass and Composer at build.
-- `8.1.4-n18.2.0-s1.51.0-c2.3.4-npm8.9.0`: PHP 8.1.4 with Node.js 18.2.0, Sass 1.51.0, Composer 2.3.4 and npm 8.9.0 at build.
+- `8.1`: PHP 8.1 with latest Node.js, and Composer at build.
+- `7.4`: PHP 7.4 with latest Node.js, and Composer at build.
 
-Replace `8` with `7` to target PHP 7, you can also use `7.4`, `8.0`, `8.1`.
+You can also use timestamped tags to target a specific build. Check https://hub.docker.com/r/alchatti/drupal-devcontainer/tags for available tags.
 
 ## Image
 
-The image is targeting the latest 7 & 8 versions of PHP with latest Node.js/lts version.
-### Scripts
+The image is targeting the latest 7 & 8 versions of PHP with latest Node.js.
+
+## Scripts
 
 ```bash
 # print image package versions/tags in json format
@@ -124,7 +112,7 @@ dump.sh
 acli-dump.sh
 ```
 
-### Installed packages
+## Installed packages
 
 The base image comes with Zsh, [Apache](https://httpd.apache.org/), [Xdebug](https://xdebug.org/), [Composer](https://getcomposer.org/).
 
@@ -134,7 +122,6 @@ With the following additional packages:
 	- [X] [Drush launcher](https://github.com/drush-ops/drush-launcher).
 	- [X] [Drush 8](https://www.drush.org/latest/) as global fallback and for Drupal 7.
 	- [X] [Drupal Coder](https://www.drupal.org/project/coder)
-	- [X] [Drupal Console launcher](https://www.drupal.org/project/console), best experience with 7.4 & 8.0.
 
 - Acquia tools
 	- [X] [Acquia CLI](https://docs.acquia.com/acquia-cli/) requires PHP 8
@@ -142,7 +129,6 @@ With the following additional packages:
 
 - Front-End development
 	- [X] [Node.js](https://nodejs.org)
-	- [X] [Dart Sass](https://github.com/sass/dart-sass)
 
 - Terminal enhancements:
 	- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -150,35 +136,33 @@ With the following additional packages:
 	- [fish](https://fishshell.com/)
 	- [Oh My Posh](https://ohmyposh.dev/) for Zsh & Fish
 
-### Environment variables
+## Environment variables
 
 The following are environment variables for customization.
 
 ```bash
-# Shell Oh My Posh Theme
-ENV POSH_THEME_ENVIRONMENT "ys"
 # ENV Defaults fpr APACHE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
+ENV WR # Alias for WORKSPACE_ROOT
+# Default theme
+ENV POSH_THEME_ENVIRONMENT "ys"
 ```
 
-# CI Build & Tagging
+## CI Build & Tagging
 
 The process is automated using `GitHub Actions` workflow with two scripts:
 
 - `build.sh`: Builds the image based on PHP, Node, Sass version with the following arguments:
-	- `-p`: PHP version or (`7` & `8`) as default.
-	- `-n`: Node.js version or (latest & lts) as defaults.
-	- `-s`: Sass version or (latest) as default by checking api.github.com.
+	- `-p`: PHP version or (`7` & `8`).
+	- `-n`: Node.js version, `node` for latest, `--lts` for lts version.
 
-- `tag.sh`: tags or push the built images by executing `about.sh` in the targeted image container.
-	- `tag.sh`: for tagging only, if branch is not main it will postfix the tag with `--branch-name`.
-	- `tag.sh push`: for pushing the tagged image to the docker & github registry.
+- `test.sh`: to load the latest local build image.
 
 The workflow is set on schedule and triggered on push to the main branch. It also can be triggered manually from GitHub.
 
-# Reference
+## References
 
 - Docker Repo https://hub.docker.com/r/alchatti/drupal-devcontainer
 - Image issues, details, source https://github.com/alchatti/drupal-devcontainer-image
