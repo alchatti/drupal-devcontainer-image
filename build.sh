@@ -31,9 +31,17 @@ fi;
 timestamp=$(date +'%Y%m%d')
 printf "\n\ntimeStamp > $timestamp \n\n"
 
+TARGETARCH=$(uname -m)
+
+if [ "$TARGETARCH" = "x86_64" ]; then
+  TARGETARCH="amd64"
+else
+  TARGETARCH="arm64"
+fi
+
 for phpver in ${PHP[@]}
 do
-  printf "\nBuilding image with \n - PHP $phpver with Node $NODE \n\n"
+  printf "\nBuilding image with \n - PHP $phpver with Node $NODE for $TARGETARCH \n\n"
 
   tag=$phpver
 
@@ -41,7 +49,7 @@ do
     --build-arg VARIANT="$phpver" \
     --build-arg NODE_VERSION="$NODE" \
     --build-arg CREATE_DATE="$timestamp" \
-    --build-arg TARGETARCH="amd64" \
+    --build-arg TARGETARCH=$TARGETARCH \
     -t local/drupal-devcontainer:"$tag"-$NODE \
     -t local/drupal-devcontainer:latest .
 
