@@ -11,6 +11,8 @@ vr_node_lts=$(node -pe process.release.lts)
 vr_npm=$(npm -v)
 vr_composer=$(composer --version | awk '{print $3}')
 
+BuildInfo=$(cat /var/.buildInfo)
+
 TAG="$vr_php_major.$vr_php_minor"
 
 if [ $vr_node_lts == "undefined" ]
@@ -28,5 +30,6 @@ TAG_L=$vr_php-n$vr_node-c$vr_composer-npm$vr_npm
 case $1 in
 	s) echo $TAG_S;;
 	l) echo $TAG_L;;
+	d) echo '{ "PHP":"'$vr_php'", "NodeJs":"'$vr_node'", "npm":"'$vr_npm'", "Composer":"'$vr_composer'", "Build Date": "'$BuildInfo'" }';;
 	*) echo '{ "TAG":"'$TAG'", "TAG_S": "'$TAG_S'", "TAG_L": "'$TAG_L'"}' ;;
 esac
