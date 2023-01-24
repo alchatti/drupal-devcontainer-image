@@ -26,6 +26,8 @@ Drupal development container based on [Microsoft PHP devcontainer image](https:/
 
 It can be used as standalone and it is recommended to use [alchatti/drupal-devcontainer](https://github.com/alchatti/drupal-devcontainer) with VS Code for an interactive development experience with required extentions installed.
 
+A base Drupal project is available at [alchatti/drupal-devcontainer-sample-project](https://github.com/alchatti/drupal-devcontainer-sample-project)
+
 Dev feature are set for the container user `vscode`, a none root user provided by the Microsoft base image.
 
 > Apache server will start as part of the a startup script using command `apache2ctl start`
