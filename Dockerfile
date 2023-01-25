@@ -24,7 +24,7 @@ LABEL org.opencontainers.image.created=$CREATE_DATE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
-ENV WR ${WORKSPACE_ROOT}
+ENV WR "/var/www/html"
 # Default theme
 ENV POSH_THEME_ENVIRONMENT "ys"
 
