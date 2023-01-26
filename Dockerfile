@@ -104,13 +104,12 @@ RUN chown -R vscode:vscode /home/vscode/.config
 
 # Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need
-RUN set -eux; \
-  \
-  if command -v a2enmod; then \
-  a2enmod rewrite; \
-  fi; \
-  \
-  apt update; \
+
+#Enable Apachae Mods
+RUN \
+  a2enmod rewrite
+
+RUN apt update; \
   apt install -y --no-install-recommends \
   libfreetype6-dev \
   libjpeg-dev \
@@ -122,8 +121,10 @@ RUN set -eux; \
   default-mysql-client \
   gettext-base \
   libpcre2-32-0 \
-  build-essential \
-  ; \
+  build-essential
+
+# Docker PHP Extensions & Config
+RUN set -eux; \
   \
   docker-php-ext-configure gd \
   --with-freetype \
@@ -136,17 +137,16 @@ RUN set -eux; \
   opcache \
   pdo_mysql \
   pdo_pgsql \
-  zip \
-  ; \
-  \
-  ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+  zip
+
+# Mark these as manually installed so they're not automatically removed by `apt-get autoremove`
+RUN ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
   | awk '/=>/ { print $3 }' \
   | sort -u \
   | xargs -r dpkg-query -S \
   | cut -d: -f1 \
   | sort -u \
-  | xargs -rt apt-mark manual \
-  ;
+  | xargs -rt apt-mark manual
 
 ADD https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/${TARGETARCH}/fish_3.6.0-1_${TARGETARCH}.deb /tmp/fish.deb
 RUN dpkg -i /tmp/fish.deb
