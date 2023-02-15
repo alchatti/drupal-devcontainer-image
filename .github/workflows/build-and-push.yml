@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
   # Run on Monday
   schedule:
-    - cron: "0 4 * * MON"
+    - cron: "0 4 1 * *"
   # - cron: '0 0 * * WED'
 
 jobs:
