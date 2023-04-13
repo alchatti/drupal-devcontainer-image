@@ -148,7 +148,7 @@ RUN ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
   | sort -u \
   | xargs -rt apt-mark manual
 
-ADD https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/${TARGETARCH}/fish_3.6.0-1_${TARGETARCH}.deb /tmp/fish.deb
+ADD https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/${TARGETARCH}/fish_3.6.1-1_${TARGETARCH}.deb /tmp/fish.deb
 RUN dpkg -i /tmp/fish.deb
 
 USER vscode
