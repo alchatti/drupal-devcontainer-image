@@ -14,6 +14,7 @@
 ![Docker Stars](https://badgen.net/docker/stars/alchatti/drupal-devcontainer?icon=docker&label=stars)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/7.4?label=7.4&logo=PHP)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.1?label=8.1&logo=PHP)
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/alchatti/drupal-devcontainer/8.1?label=8.2&logo=PHP)
 
 [![Build & Publish Images](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml/badge.svg?branch=main)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/build-and-push.yml)
 [![Update Container Description](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml/badge.svg)](https://github.com/alchatti/drupal-devcontainer-image/actions/workflows/update-container-description.yml)
