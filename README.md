@@ -100,6 +100,7 @@ To target a specific version build the tag is configured as follow `$php-$dateti
 
 Available tags:
 
+- `8.2`: PHP 8.2 with latest Node.js, and Composer at build.
 - `8.1`: PHP 8.1 with latest Node.js, and Composer at build.
 - `7.4`: PHP 7.4 with latest Node.js, and Composer at build.
 
