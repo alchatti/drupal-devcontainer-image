@@ -164,6 +164,7 @@ RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
 RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
 
 RUN mkdir ~/.acquia
+RUN mkdir ~/.drush
 
 RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
   echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
