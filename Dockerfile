@@ -102,6 +102,9 @@ RUN chmod +x /usr/local/bin/oh-my-posh && \
 COPY ./config /home/vscode/.config/
 RUN chown -R vscode:vscode /home/vscode/.config
 
+# Zsh Startup
+RUN echo startup.sh >> /home/vscode/.zshrc
+
 # Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need
 
