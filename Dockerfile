@@ -65,7 +65,7 @@ RUN chmod +rx /usr/bin/drush
 
 # Install Drush 8.* globally for D6, D7, D8.3-
 # for D8.4+ use Drupal Composer site project with Drush listed as a dependency
-ADD https://github.com/drush-ops/drush/releases/download/8.4.8/drush.phar /opt/drush
+ADD https://github.com/drush-ops/drush/releases/download/8.4.12/drush.phar /opt/drush
 RUN chmod +rx /opt/drush
 
 # Add Acquia Cli
