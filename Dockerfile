@@ -24,6 +24,7 @@ LABEL org.opencontainers.image.created=$CREATE_DATE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
+ENV DCR "/var/www/html/docroot"
 ENV WR "/var/www/html"
 # Default theme
 ENV POSH_THEME_ENVIRONMENT "ys"
@@ -65,7 +66,7 @@ RUN chmod +rx /usr/bin/drush
 
 # Install Drush 8.* globally for D6, D7, D8.3-
 # for D8.4+ use Drupal Composer site project with Drush listed as a dependency
-ADD https://github.com/drush-ops/drush/releases/download/8.4.8/drush.phar /opt/drush
+ADD https://github.com/drush-ops/drush/releases/download/8.4.12/drush.phar /opt/drush
 RUN chmod +rx /opt/drush
 
 # Add Acquia Cli
@@ -101,6 +102,9 @@ RUN chmod +x /usr/local/bin/oh-my-posh && \
 # Copy fish config
 COPY ./config /home/vscode/.config/
 RUN chown -R vscode:vscode /home/vscode/.config
+
+# Zsh Startup
+RUN echo startup.sh >> /home/vscode/.zshrc
 
 # Based on https://github.com/docker-library/drupal/blob/master/9.2/php8.0/apache-buster/Dockerfile
 # install the PHP extensions we need
