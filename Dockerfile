@@ -58,6 +58,8 @@ RUN chmod +x /usr/local/bin/about.sh && \
   chmod +x /usr/local/bin/init.sh && \
   chmod +x /usr/local/bin/startup.sh
 
+RUN ln -s /usr/local/bin/php /usr/bin/php
+
 # Drush Launcher global drush as fallback
 ENV DRUSH_LAUNCHER_FALLBACK /opt/drush
 # Add Drush Launcher for Global and local Drush
