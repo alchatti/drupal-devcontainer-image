@@ -145,6 +145,9 @@ With the following additional packages:
 	- [fish](https://fishshell.com/)
 	- [Oh My Posh](https://ohmyposh.dev/) for Zsh & Fish
 
+- Git enhancements:
+	- [git-quick-stats](https://github.com/arzzen/git-quick-stats) a simple and efficient way to access various statistics in a git repository
+
 ## Environment variables
 
 The following are environment variables for customization.
@@ -177,6 +180,12 @@ The workflow is set on schedule and triggered on push to the main branch. It als
 - Image issues, details, source https://github.com/alchatti/drupal-devcontainer-image
 
 ## Change logs
+
+### December 2023
+
+- feat: `git-quick-stats` added to the image.
+- feat: `fish` updated to  `3.6.4-1`.
+- feat: `about` script to prints base image OS version.
 
 ### January 2023
 
