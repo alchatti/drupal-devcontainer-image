@@ -102,7 +102,10 @@ Available tags:
 
 - `8.2`: PHP 8.2 with latest Node.js, and Composer at build.
 - `8.1`: PHP 8.1 with latest Node.js, and Composer at build.
-- `7.4`: PHP 7.4 with latest Node.js, and Composer at build.
+
+Legacy / Deprecated tags:
+
+- `7.4`: PHP 7.4 with latest Node.js, and Composer at build. (last build 2023DEC01)
 
 You can also use timestamped tags to target a specific build. Check https://hub.docker.com/r/alchatti/drupal-devcontainer/tags for available tags.
 
@@ -186,6 +189,7 @@ The workflow is set on schedule and triggered on push to the main branch. It als
 - feat: `git-quick-stats` added to the image.
 - feat: `fish` updated to  `3.6.4-1`.
 - feat: `about` script to prints base image OS version.
+- feat: retired `7.4` PHP version.
 
 ### January 2023
 
