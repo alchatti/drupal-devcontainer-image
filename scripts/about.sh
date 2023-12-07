@@ -15,6 +15,8 @@ BuildInfo=$(cat /var/.buildInfo)
 
 TAG="$vr_php_major.$vr_php_minor"
 
+OSInfo=$(cat /etc/os-release | grep PRETTY_NAME | awk -F\" '{print $2}')
+
 if [ $vr_node_lts == "undefined" ]
 then
 	TAG_N="n$vr_node_major"
@@ -30,6 +32,6 @@ TAG_L=$vr_php-n$vr_node-c$vr_composer-npm$vr_npm
 case $1 in
 	s) echo $TAG_S;;
 	l) echo $TAG_L;;
-	d) echo '{ "PHP":"'$vr_php'", "NodeJs":"'$vr_node'", "npm":"'$vr_npm'", "Composer":"'$vr_composer'", "Build Date": "'$BuildInfo'" }';;
+	d) echo '{ "OS":"'$OSInfo'", "PHP":"'$vr_php'", "NodeJs":"'$vr_node'", "npm":"'$vr_npm'", "Composer":"'$vr_composer'", "Build Date": "'$BuildInfo'" }';;
 	*) echo '{ "TAG":"'$TAG'", "TAG_S": "'$TAG_S'", "TAG_L": "'$TAG_L'"}' ;;
 esac
