@@ -127,7 +127,8 @@ RUN apt update; \
   default-mysql-client \
   gettext-base \
   libpcre2-32-0 \
-  build-essential
+  build-essential \
+  git-quick-stats
 
 # Docker PHP Extensions & Config
 RUN set -eux; \
