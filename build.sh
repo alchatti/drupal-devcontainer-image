@@ -17,7 +17,7 @@ done
 if [ -z "$PHP" ]
 then
   # PHP=("7" "8.0" "8.1")
-  PHP=("7.4" "8.1")
+  PHP=("8.1" "8.2")
   printf "- No PHP version setting defaulting to 7 and 8 \n\n"
 fi;
 
