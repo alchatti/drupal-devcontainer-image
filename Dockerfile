@@ -116,6 +116,12 @@ RUN echo startup.sh >> /home/vscode/.zshrc
 RUN \
   a2enmod rewrite
 
+# Packages & Repositories
+
+## Add Fish to sources
+RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_12/ /' | sudo tee /etc/apt/sources.list.d/shells:fish:release:3.list; \
+  curl -fsSL https://download.opensuse.org/repositories/shells:fish:release:3/Debian_12/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/shells_fish_release_3.gpg > /dev/null
+
 RUN apt update; \
   apt install -y --no-install-recommends \
   libfreetype6-dev \
@@ -129,7 +135,9 @@ RUN apt update; \
   gettext-base \
   libpcre2-32-0 \
   build-essential \
-  git-quick-stats
+  git-quick-stats \
+  fish \
+  ;
 
 # Docker PHP Extensions & Config
 RUN set -eux; \
@@ -156,8 +164,6 @@ RUN ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
   | sort -u \
   | xargs -rt apt-mark manual
 
-ADD https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/${TARGETARCH}/fish_3.6.4-1_${TARGETARCH}.deb /tmp/fish.deb
-RUN dpkg -i /tmp/fish.deb
 
 USER vscode
 
