@@ -111,7 +111,7 @@ You can also use timestamped tags to target a specific build. Check https://hub.
 
 ## Image
 
-The image is targeting the latest 7 & 8 versions of PHP with latest Node.js.
+The image is targeting the latest 8.1 & 8.2 versions of PHP with latest Node.js.
 
 ## Scripts
 
@@ -183,6 +183,16 @@ The workflow is set on schedule and triggered on push to the main branch. It als
 - Image issues, details, source https://github.com/alchatti/drupal-devcontainer-image
 
 ## Change logs
+
+### January 2024
+
+- feat: base image updated to Debian 12 (Bookworm).
+- feat: `fish` now uses repository for installation.
+- feat: github/actions updated as follows:
+ 	- actions/checkout@v`2`->`3`
+ 	- docker/setup-qemu-action@v`2`->`3`
+ 	- docker/setup-buildx-action@v`2.0.0`->`3`
+ 	- docker/build-push-action@v`3`->`5`
 
 ### December 2023
 
