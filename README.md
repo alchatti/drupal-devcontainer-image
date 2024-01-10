@@ -189,10 +189,11 @@ The workflow is set on schedule and triggered on push to the main branch. It als
 - feat: base image updated to Debian 12 (Bookworm).
 - feat: `fish` now uses repository for installation.
 - feat: github/actions updated as follows:
- 	- actions/checkout@v`2`->`3`
+ 	- actions/checkout@v`2`->`4`
  	- docker/setup-qemu-action@v`2`->`3`
  	- docker/setup-buildx-action@v`2.0.0`->`3`
  	- docker/build-push-action@v`3`->`5`
+- ci: switch to `peter-evans/dockerhub-description@v3` as it is being maintained.
 
 ### December 2023
 
