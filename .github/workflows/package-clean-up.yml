@@ -2,9 +2,9 @@ name: Delete all containers from repository without tags
 
 # Controls when the workflow will run
 on:
-  workflow_dispatch
-  # schedule:
-  # - cron: "0 3 3 * *"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 3 */6 *"
 
 jobs:
   CleanUp:
