@@ -11,6 +11,6 @@ apachectl start
 printf "Apache Ready! 🚀\n"
 
 printf "\n💡 Hints"
-echo '{"$W":"'$WORKSPACE_ROO./T'", "$D": "'$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT'"}' | jq
+echo '{"$W":"'$WORKSPACE_ROOT'", "$D": "'$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT'"}' | jq
 
 printf "\n"
