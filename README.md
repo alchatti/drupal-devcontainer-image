@@ -157,11 +157,10 @@ The following are environment variables for customization.
 
 ```bash
 # ENV Defaults fpr APACHE
-ENV APACHE_SERVER_NAME="localhost"
+ENV APACHE_SERVER_NAME "localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
-ENV WR # Alias for WORKSPACE_ROOT
-# Default theme
+# ENV Default theme for Oh My Posh
 ENV POSH_THEME_ENVIRONMENT "ys"
 ```
 
@@ -194,6 +193,7 @@ The workflow is set on schedule and triggered on push to the main branch. It als
  	- docker/setup-buildx-action@v`2.0.0`->`3`
  	- docker/build-push-action@v`3`->`5`
 - ci: switch to `peter-evans/dockerhub-description@v3` as it is being maintained.
+- fix: PassEnv `APACHE_DOCUMENT_ROOT` & `WORKSPACE_ROOT` in apache2.conf to enable in `/etc/apache2/sites-available/*.conf`
 
 ### December 2023
 

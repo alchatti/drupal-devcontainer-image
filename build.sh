@@ -50,6 +50,7 @@ do
     --build-arg NODE_VERSION="$NODE" \
     --build-arg CREATE_DATE="$timestamp" \
     --build-arg TARGETARCH=$TARGETARCH \
+    --no-cache \
     -t local/drupal-devcontainer:"$tag"-$NODE \
     -t local/drupal-devcontainer:latest .
 
