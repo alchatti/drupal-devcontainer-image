@@ -5,7 +5,7 @@
 
 ARG VARIANT
 
-FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}-bookworm
+FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}-apache-bookworm
 
 ARG VARIANT
 ARG CREATE_DATE
@@ -25,16 +25,20 @@ LABEL org.opencontainers.image.created=$CREATE_DATE
 ENV APACHE_SERVER_NAME="localhost"
 ENV APACHE_DOCUMENT_ROOT "docroot"
 ENV WORKSPACE_ROOT "/var/www/html"
-ENV DCR "/var/www/html/docroot"
-ENV WR "/var/www/html"
-# Default theme
+# ENV Default theme for Oh My Posh
 ENV POSH_THEME_ENVIRONMENT "ys"
+# Shortcut to make development easier
+ENV W $WORKSPACE_ROOT
+ENV D $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT
+
 
 RUN echo "${CREATE_DATE}" >> /var/.buildInfo
 
 # Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
+RUN echo "PassEnv APACHE_DOCUMENT_ROOT" >> /etc/apache2/apache2.conf
+RUN echo "PassEnv WORKSPACE_ROOT" >> /etc/apache2/apache2.conf
 
 # Drupal filesystem
 RUN mkdir /mnt/files && \
@@ -201,3 +205,5 @@ RUN set -eux; \
   rm -rf /var/lib/apt/lists/* \
   rm -r /tmp/*\
   ;
+
+USER vscode
