@@ -5,7 +5,7 @@
 
 ARG VARIANT
 
-FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}-apache-bookworm
+FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}-bookworm
 
 ARG VARIANT
 ARG CREATE_DATE
