@@ -1,0 +1,22 @@
+name: Delete all containers from repository without tags
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+  workflow_dispatch:
+  # schedule:
+  # - cron: "0 3 3 * *"
+
+jobs:
+  CleanUp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete all containers from repository without tags
+        uses: Chizkiyahu/delete-untagged-ghcr-action@v3
+        with:
+          token: ${{ secrets.PKG_GITHUB_TOKEN }}
+          repository_owner: ${{ github.repository_owner }}
+          repository: ${{ github.repository }}
+          untagged_only: true
+          owner_type: user
