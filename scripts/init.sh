@@ -21,8 +21,8 @@ then
 	composer create-project --no-install drupal/recommended-project:^10 .
 	sed -i'.original' 's/web\//docroot\//g' composer.json && rm composer.json.original
 
-	# composer require drush/drush:^10.2 drupal/mysql56 --no-update
-	composer require --no-update drush/drush:^11
+	# composer require drush/drush -- 12 for PHP 8.1+ Compatibility
+	composer require --no-update drush/drush:^12
 
 	# Drupal Modules
 	composer require --no-update drupal/stage_file_proxy
