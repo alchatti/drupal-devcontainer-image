@@ -46,7 +46,7 @@ RUN mkdir /mnt/files && \
   chmod -R 775 /mnt/files
 
 # PHP Development settings overwrite
-COPY ./php.ini /usr/local/etc/php/conf.d/z-docker-dev-php.ini
+COPY ./php.ini /usr/local/etc/php/conf.d/x-docker-dev-php.ini
 
 # Init Script
 COPY ./scripts/about.sh /usr/local/bin/
