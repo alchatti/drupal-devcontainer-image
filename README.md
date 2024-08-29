@@ -80,6 +80,8 @@ exit
 docker volume rm drupal-dev-html
 ```
 
+> Xdebug port is 9003, which the default value.
+
 ### Additional usage options & flags
 
 - Change the shell to `zsh` and the theme to 'blue-owl' by using environment variable `POSH_THEME_ENVIRONMENT`, for more theme options check [Oh My Posh theme](https://ohmyposh.dev/docs/themes).
