@@ -33,6 +33,8 @@ Dev feature are set for the container user `vscode`, a none root user provided b
 
 > Apache server will start as part of the a startup script using command `apache2ctl start`
 
+> Xdebug port is `9003`, the [default client port] (https://xdebug.org/docs/all_settings#client_port).
+
 ### Quick Start: Self contained Drupal site for testing & Demonstration
 
 Drupal 10 can be installed with SQLite without the need for an additional database container.
@@ -79,8 +81,6 @@ exit
 ```bash
 docker volume rm drupal-dev-html
 ```
-
-> Xdebug port is 9003, which the default value.
 
 ### Additional usage options & flags
 
