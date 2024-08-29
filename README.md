@@ -33,7 +33,7 @@ Dev feature are set for the container user `vscode`, a none root user provided b
 
 > Apache server will start as part of the a startup script using command `apache2ctl start`
 
-> Xdebug port is `9003`, the [default client port] (https://xdebug.org/docs/all_settings#client_port).
+>Xdebug port is `9003`, the [default client port](https://xdebug.org/docs/all_settings#client_port).
 
 ### Quick Start: Self contained Drupal site for testing & Demonstration
 
