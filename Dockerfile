@@ -24,16 +24,23 @@ LABEL org.opencontainers.image.created=$CREATE_DATE
 
 # ENV Defaults fpr APACHE
 ENV APACHE_SERVER_NAME="localhost"
-ENV APACHE_DOCUMENT_ROOT "docroot"
-ENV WORKSPACE_ROOT "/var/www/html"
+ENV APACHE_DOCUMENT_ROOT="docroot"
+ENV WORKSPACE_ROOT="/var/www/html"
 # ENV Default theme for Oh My Posh
-ENV POSH_THEME_ENVIRONMENT "ys"
+ENV POSH_THEME_ENVIRONMENT="ys"
 # Shortcut to make development easier
-ENV W $WORKSPACE_ROOT
-ENV D $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT
-
+ENV W="$WORKSPACE_ROOT"
+ENV D="$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT"
 
 RUN echo "${CREATE_DATE}" >> /var/.buildInfo
+
+# Drupal filesystem
+RUN mkdir /mnt/files && \
+  chown -R www-data:www-data /mnt/files && \
+  chmod -R 775 /mnt/files
+
+# Init Script
+COPY --chmod=+x ./scripts/ /usr/local/bin/
 
 # Apache Configurations
 RUN sed -ri -e 's!/var/www/html!${WORKSPACE_ROOT}/${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
@@ -41,30 +48,12 @@ RUN echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf
 RUN echo "PassEnv APACHE_DOCUMENT_ROOT" >> /etc/apache2/apache2.conf
 RUN echo "PassEnv WORKSPACE_ROOT" >> /etc/apache2/apache2.conf
 
-# Drupal filesystem
-RUN mkdir /mnt/files && \
-  chown -R www-data:www-data /mnt/files && \
-  chmod -R 775 /mnt/files
+
 
 # PHP Development settings overwrite
 COPY ./php.ini /usr/local/etc/php/conf.d/x-docker-dev-php.ini
 
-# Init Script
-COPY ./scripts/about.sh /usr/local/bin/
-COPY ./scripts/acli-dump.sh /usr/local/bin/acli-dump
-COPY ./scripts/drestore.sh /usr/local/bin/drestore
-COPY ./scripts/dump.sh /usr/local/bin/dump
-COPY ./scripts/init.sh /usr/local/bin/
-COPY ./scripts/startup.sh /usr/local/bin/
-
-RUN chmod +x /usr/local/bin/about.sh && \
-  chmod +x /usr/local/bin/acli-dump && \
-  chmod +x /usr/local/bin/drestore && \
-  chmod +x /usr/local/bin/dump && \
-  chmod +x /usr/local/bin/init.sh && \
-  chmod +x /usr/local/bin/startup.sh
-
-RUN ln -s /usr/local/bin/php /usr/bin/php
+# RUN ln -s /usr/local/bin/php /usr/bin/php
 
 # Drush Launcher global drush as fallback
 ENV DRUSH_LAUNCHER_FALLBACK /opt/drush

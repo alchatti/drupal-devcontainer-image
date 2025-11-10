@@ -3,7 +3,7 @@
 printf "👋  Welcome to the world of Dev Containers...\n\n"
 
 printf "\n⚒️  Image Details "
-about.sh d | jq
+about d | jq
 
 printf "\n⚙️  Apache kick starting..\n"
 apachectl stop
