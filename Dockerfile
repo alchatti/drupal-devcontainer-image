@@ -3,22 +3,23 @@
 # For list of tags vsist https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list
 # Relesases code names at https://wiki.debian.org/DebianReleases#Production_Releases
 
-ARG VARIANT
+ARG PHP
+ARG DEBIAN
 
-FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}-bookworm
+FROM mcr.microsoft.com/vscode/devcontainers/php:${PHP}-${DEBIAN}
 
-ARG VARIANT
+ARG PHP
 ARG CREATE_DATE
 ARG NODE_VERSION
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.title="Drupal Devcontainer Image with Node"
-LABEL org.opencontainers.image.description="Drupal development image with PHP $VARIANT, Xdebug, Composer and Node.js"
+LABEL org.opencontainers.image.description="Drupal development image with PHP $PHP, Xdebug, Composer and Node.js"
 LABEL org.opencontainers.image.authors="Majed Al-Chatti"
 LABEL org.opencontainers.image.source="https://github.com/alchatti/drupal-devcontainer-image"
 LABEL org.opencontainers.image.documentation="https://github.com/alchatti/drupal-devcontainer-image"
 LABEL org.opencontainers.image.base.name="ghcr.io/alchatti/drupal-devcontainer"
-LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$VARIANT"
+LABEL org.opencontainers.image.ref.name="ghcr.io/alchatti/drupal-devcontainer:$PHP"
 LABEL org.opencontainers.image.created=$CREATE_DATE
 
 # ENV Defaults fpr APACHE
