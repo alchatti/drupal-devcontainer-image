@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
+echo "📌 Entrypoint running as: $(whoami)"
 
 echo "🔧 Applying runtime configuration..."
 
@@ -9,7 +11,7 @@ echo "🔧 Applying runtime configuration..."
 # Write runtime INI to the per-user PHP conf.d (set up in Dockerfile)
 RUNTIME_PHP_INI="$PHP_INI_DIR/conf.d/zz-x-docker-dev-php.ini"
 
-cat <<EOF > "$RUNTIME_PHP_INI"
+cat > "$RUNTIME_PHP_INI" <<EOF
 ; # PHP Configurations - Static
 ; file_uploads = On
 max_input_vars = 6000
@@ -40,7 +42,7 @@ echo "✅ PHP configured (memory_limit=${PHP_MEMORY_LIMIT}), written to ${RUNTIM
 # Verify Redis & Imagick
 # -----------------------------
 echo "🧩 Verifying extensions..."
-php -m | grep -E 'redis|imagick' || echo "- ⚠️  Redis/Imagick not detected"
+php -m | grep -E 'redis|imagick' || echo "⚠️  Redis/Imagick not detected"
 
 # -----------------------------
 # Setting Apache
@@ -60,7 +62,7 @@ fi
 
 # Create a minimal 000-default.conf into sites-enabled so Apache will use it
 VHOST_FILE="/etc/apache2/sites-enabled/000-default.conf"
-cat <<EOF > "$VHOST_FILE"
+cat > "$VHOST_FILE" <<EOF
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
 
@@ -93,4 +95,5 @@ else
 fi
 
 # Back to Shell
-exec "$@"
+echo "👤 Dropping privileges to user: vscode"
+exec gosu vscode "$@"
