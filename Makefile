@@ -15,6 +15,8 @@ IMAGE_TAG ?= p$(PHP_VERSION)-n$(NODE_VERSION)-$(DEBIAN)
 TIMESTAMP := $(shell date +'%Y%m%d')
 IMAGE := $(IMAGE_NAME):$(IMAGE_TAG)
 
+S ?= zsh
+
 .PHONY: build run check help
 
 ## 🏗️ Build the Docker image
@@ -39,7 +41,7 @@ run:
 	-v "drupal-dev-html:/var/www/html" \
 	-e "TESTING_1=⭐⭐⭐Hello World!⭐⭐⭐" \
 	-e "TESTING_2=🚀🛸🛰️🕳️💫" \
-	local/drupal-devcontainer:latest fish
+	local/drupal-devcontainer:latest $(S)
 
 ## 🔍 Check installed versions inside the image
 check:

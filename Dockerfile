@@ -32,14 +32,15 @@ ENV POSH_THEME_ENVIRONMENT="ys"
 ENV W="$WORKSPACE_ROOT"
 ENV D="$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT"
 # Set PHP to scan the per-user conf.d first (so runtime values override global)
-ENV PHP_INI_SCAN_DIR=/home/vscode/.php/conf.d:/usr/local/etc/php/conf.d
+# ENV PHP_INI_SCAN_DIR=/home/vscode/.php/conf.d:/usr/local/etc/php/conf.d
 
 USER root
 
 # PHP Development settings overwrite
-COPY ./php.ini /usr/local/etc/php/conf.d/x-docker-dev-php.ini
 RUN set -eux; \
   cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
+  && chown root:www-data "$PHP_INI_DIR/conf.d/" \
+  && chmod g+w "$PHP_INI_DIR/conf.d/" \
   # # Build Info && Apache Configurations
   && echo "${CREATE_DATE}" >> /var/.buildInfo \
   && echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf \
@@ -47,14 +48,17 @@ RUN set -eux; \
   && mkdir /mnt/files \
   && chown -R www-data:www-data /mnt/files \
   && chmod -R 775 /mnt/files \
-  && mkdir -p /home/vscode/.php/conf.d && chown -R vscode:vscode /home/vscode/.php \
+  && mkdir -p /home/vscode/.php/conf.d \
   && rm -f /etc/apache2/sites-enabled/000-default.conf \
   && cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf \
   && chown www-data:www-data /etc/apache2/sites-enabled/000-default.conf \
-  && chmod g+w /etc/apache2/sites-enabled/000-default.conf
-
+  && chmod g+w /etc/apache2/sites-enabled/000-default.conf \
+  && mkdir /home/vscode/.acquia \
+  && mkdir /home/vscode/.drush \
+  && chown -R vscode:vscode /home/vscode
 
 RUN set -eux; \
+  echo "📦 Installing PHP extensions and other dependencies..." ; \
   # Install dependencies
   apt-get update && apt-get install -y --no-install-recommends \
   # GD/Image dependencies
@@ -114,9 +118,6 @@ COPY --chmod=+x ./scripts/ /usr/local/bin/
 # EntryPoint Script
 COPY --chmod=+x entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# Zsh Startup
-RUN echo startup.sh >> /home/vscode/.zshrc
-
 # Copy fish config
 COPY --chown=vscode:vscode ./config /home/vscode/.config/
 
@@ -124,26 +125,18 @@ COPY --chown=vscode:vscode ./config /home/vscode/.config/
 # ### TODO: Clean UP
 
 
-# #Zsh Plugins
-# ADD https://github.com/zsh-users/zsh-autosuggestions/archive/refs/heads/master.zip /tmp/zsh-autosuggestions.zip
-# RUN unzip /tmp/zsh-autosuggestions.zip -d  /tmp/zsh-autosuggestions \
-#   && mv /tmp/zsh-autosuggestions/zsh-autosuggestions-master /home/vscode/.oh-my-zsh/plugins/zsh-autosuggestions \
-#   && chown vscode:vscode /home/vscode/.oh-my-zsh/plugins/zsh-autosuggestions
+RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
+  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
-# ADD https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/heads/master.zip /tmp/zsh-syntax-highlighting.zip
-# RUN unzip /tmp/zsh-syntax-highlighting.zip -d  /tmp/zsh-syntax-highlighting \
-#   && mv /tmp/zsh-syntax-highlighting/zsh-syntax-highlighting-master /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting \
-#   && chown vscode:vscode /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting
 
-# Oh My Posh - Install and configure with best practices
+# Oh My Posh - Install and configure
 RUN set -eux; \
+  echo "📦 Installing Oh My Posh..."; \
   # Download oh-my-posh binary
-  curl -fsSL "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-${TARGETARCH}" \
-  -o /usr/local/bin/oh-my-posh && \
+  curl -fsSL "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-${TARGETARCH}" -o /usr/local/bin/oh-my-posh && \
   chmod +x /usr/local/bin/oh-my-posh && \
   # Download and extract themes
-  curl -fsSL https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip \
-  -o /tmp/oh-my-posh-themes.zip && \
+  curl -fsSL https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip -o /tmp/oh-my-posh-themes.zip && \
   mkdir -p /opt/.poshthemes && \
   unzip /tmp/oh-my-posh-themes.zip -d /opt/.poshthemes && \
   # Set proper permissions for all users to read themes
@@ -152,22 +145,28 @@ RUN set -eux; \
   # Clean up temporary files
   rm -rf /tmp/*
 
+# Zsh Plugins (autosuggestions and syntax-highlighting)
+RUN set -eux; \
+  echo "📦 Zsh Plugins (autosuggestions and syntax-highlighting)..."; \
+  curl -fsSL https://github.com/zsh-users/zsh-autosuggestions/archive/refs/heads/master.zip -o /tmp/zsh-autosuggestions.zip && \
+  unzip /tmp/zsh-autosuggestions.zip -d /tmp/zsh-autosuggestions && \
+  mv /tmp/zsh-autosuggestions/zsh-autosuggestions-master /home/vscode/.oh-my-zsh/plugins/zsh-autosuggestions && \
+  # Syntax Highlighting
+  curl -fsSL https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/heads/master.zip -o /tmp/zsh-syntax-highlighting.zip && \
+  unzip /tmp/zsh-syntax-highlighting.zip -d /tmp/zsh-syntax-highlighting && \
+  mv /tmp/zsh-syntax-highlighting/zsh-syntax-highlighting-master /home/vscode/.oh-my-zsh/plugins/zsh-syntax-highlighting && \
+  chown -R vscode:vscode /home/vscode/ && \
+  rm -rf /tmp/*
 
+USER vscode
+# Setup for vscode user SHELL
+RUN echo startup >> ~/.zshrc && \
+  #sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
+  echo 'export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"' >> ~/.zshrc && \
+  echo 'eval "$(oh-my-posh init zsh --config /opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json)"' >> ~/.zshrc && \
+  sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc && \
+  echo "exec \$SHELL -l"  >> ~/.bashrc
 
-
-# USER vscode
-
-# RUN echo "$(oh-my-posh init zsh)" >> ~/.zshrc && \
-#   sed -ri -e 's!export POSH_THEME=.*!export POSH_THEME="/opt/.poshthemes/$POSH_THEME_ENVIRONMENT.omp.json"!g' ~/.zshrc && \
-#   echo "exec \$SHELL -l"  >> ~/.bashrc
-
-# RUN sed -ri -e 's!plugins=.*!plugins=(git zsh-autosuggestions zsh-syntax-highlighting)!g' ~/.zshrc
-
-# RUN mkdir ~/.acquia
-# RUN mkdir ~/.drush
-
-RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
-  echo '<?php phpinfo();' >> $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT/index.php
 
 # USER root
 

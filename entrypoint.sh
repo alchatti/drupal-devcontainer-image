@@ -7,9 +7,22 @@ echo "🔧 Applying runtime configuration..."
 # PHP Configuration
 # -----------------------------
 # Write runtime INI to the per-user PHP conf.d (set up in Dockerfile)
-RUNTIME_PHP_INI_DIR="${HOME:-/home/vscode}/.php/conf.d"
+RUNTIME_PHP_INI="$PHP_INI_DIR/conf.d/zz-x-docker-dev-php.ini"
 
-cat > "$RUNTIME_PHP_INI_DIR/99-runtime.ini" <<EOF
+cat <<EOF > "$RUNTIME_PHP_INI"
+; # PHP Configurations - Static
+; file_uploads = On
+max_input_vars = 6000
+max_multipart_body_parts = 12000
+max_input_nesting_level = 1200
+display_errors = on
+; session.cookie_secure = 0
+
+; # Xdebug
+; vscode default xdebug port
+xdebug.client_port =${XDEBUG_CLIENT_PORT:-9003}
+
+; # PHP Configurations - From Environment Variables (with defaults)
 memory_limit=${PHP_MEMORY_LIMIT:--1}
 upload_max_filesize=${PHP_UPLOAD_MAX_FILESIZE:-100M}
 post_max_size=${PHP_POST_MAX_SIZE:-100M}
@@ -20,12 +33,9 @@ opcache.enable=1
 opcache.memory_consumption=${OPCACHE_MEMORY_CONSUMPTION:-256}
 opcache.max_accelerated_files=${OPCACHE_MAX_ACCELERATED_FILES:-10000}
 opcache.validate_timestamps=${OPCACHE_VALIDATE_TIMESTAMPS:-1}
-
-#extension=redis
-#extension=imagick
 EOF
 
-echo "✅ PHP configured (memory_limit=${PHP_MEMORY_LIMIT}), written to ${RUNTIME_PHP_INI_DIR}/99-runtime.ini"
+echo "✅ PHP configured (memory_limit=${PHP_MEMORY_LIMIT}), written to ${RUNTIME_PHP_INI}"
 # -----------------------------
 # Verify Redis & Imagick
 # -----------------------------
