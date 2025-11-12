@@ -23,6 +23,9 @@ display_errors = on
 ; # Xdebug
 ; vscode default xdebug port
 xdebug.client_port =${XDEBUG_CLIENT_PORT:-9003}
+;xdebug.start_with_request = yes
+xdebug.mode = debug,develop
+xdebug.log_level = 0
 
 ; # PHP Configurations - From Environment Variables (with defaults)
 date.timezone = ${PHP_DATE_TIMEZONE:-"Asia/Dubai"}
