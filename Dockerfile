@@ -203,9 +203,9 @@ RUN echo startup >> ~/.zshrc && \
 
 ####-------------
 
-USER vscode
-
-#RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm install -g npm@latest"; fi
-
+# USER vscode
 USER root
+
+RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm install -g npm@latest"; fi
+
 ENTRYPOINT ["entrypoint.sh"]
