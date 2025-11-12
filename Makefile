@@ -36,7 +36,6 @@ run:
 	@echo "🚀 Starting $(IMAGE)..."
 	docker run --rm -it \
 	-h "drupal-dev" \
-	-u "vscode" \
 	-p 80:80 \
 	-v "drupal-dev-html:/var/www/html" \
 	-e "TESTING_1=⭐⭐⭐Hello World!⭐⭐⭐" \

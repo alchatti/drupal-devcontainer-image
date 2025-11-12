@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
+set -eo pipefail
 
 echo "📌 Entrypoint running as: $(whoami)"
 
