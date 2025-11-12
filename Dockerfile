@@ -39,8 +39,8 @@ USER root
 # PHP Development settings overwrite
 RUN set -eux; \
   cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
-  && chown root:www-data "$PHP_INI_DIR/conf.d/" \
-  && chmod g+w "$PHP_INI_DIR/conf.d/" \
+  # && chown root:www-data "$PHP_INI_DIR/conf.d/" \
+  # && chmod g+w "$PHP_INI_DIR/conf.d/" \
   # # Build Info && Apache Configurations
   && echo "${CREATE_DATE}" >> /var/.buildInfo \
   && echo "ServerName ${APACHE_SERVER_NAME}" >> /etc/apache2/apache2.conf \
@@ -48,11 +48,11 @@ RUN set -eux; \
   && mkdir /mnt/files \
   && chown -R www-data:www-data /mnt/files \
   && chmod -R 775 /mnt/files \
-  && mkdir -p /home/vscode/.php/conf.d \
-  && rm -f /etc/apache2/sites-enabled/000-default.conf \
-  && cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf \
-  && chown www-data:www-data /etc/apache2/sites-enabled/000-default.conf \
-  && chmod g+w /etc/apache2/sites-enabled/000-default.conf \
+  # && mkdir -p /home/vscode/.php/conf.d \
+  # && rm -f /etc/apache2/sites-enabled/000-default.conf \
+  # && cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf \
+  # && chown www-data:www-data /etc/apache2/sites-enabled/000-default.conf \
+  # && chmod g+w /etc/apache2/sites-enabled/000-default.conf \
   && mkdir /home/vscode/.acquia \
   && mkdir /home/vscode/.drush \
   && chown -R vscode:vscode /home/vscode
@@ -82,6 +82,7 @@ RUN set -eux; \
   redis-tools \
   git-quick-stats \
   fish \
+  gosu \
   && \
   # Configure PHP Extensions
   docker-php-ext-configure gd \
@@ -206,4 +207,5 @@ USER vscode
 
 #RUN if [ "${NODE_VERSION}" != "none" ] &&  [ "${NODE_VERSION}" != "" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1 && npm install -g npm@latest"; fi
 
+USER root
 ENTRYPOINT ["entrypoint.sh"]
