@@ -25,6 +25,7 @@ display_errors = on
 xdebug.client_port =${XDEBUG_CLIENT_PORT:-9003}
 
 ; # PHP Configurations - From Environment Variables (with defaults)
+date.timezone = ${PHP_DATE_TIMEZONE:-"Asia/Dubai"}
 memory_limit=${PHP_MEMORY_LIMIT:--1}
 upload_max_filesize=${PHP_UPLOAD_MAX_FILESIZE:-100M}
 post_max_size=${PHP_POST_MAX_SIZE:-100M}
