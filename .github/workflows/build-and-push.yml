@@ -3,7 +3,8 @@ name: Build & Publish Images
 on:
   push:
     branches: [main]
-    paths-ignore: ["**.md"]
+    paths-ignore:
+      - "**.md"
 
   workflow_dispatch:
 
@@ -11,31 +12,29 @@ on:
     - cron: "0 3 3 * *"
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        php: ["8.1", "8.2", "8.3"]
-        os: ["bookworm", "trixie"]
-
+  prepare:
     runs-on: ubuntu-latest
 
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Generate build timestamp
-        id: date
+      - name: Prepare build matrix
+        id: matrix
         shell: bash
         run: |
-          echo "timestamp=$(date -u +'%Y%m%d%H%M%S')" >> "$GITHUB_OUTPUT"
-          echo "date=$(date -u +'%Y%m%d')" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
 
-      - name: Prepare image metadata
-        id: meta
-        shell: bash
-        env:
-          JOB_INDEX: ${{ strategy.job-index }}
-          JOB_TOTAL: ${{ strategy.job-total }}
-        run: |
+          IMAGE="alchatti/drupal-devcontainer"
+          CONTEXT="."
+          TARGET=""
+
+          PHP_VERSIONS='["8.1", "8.2", "8.3"]'
+          OS_VERSIONS='["bookworm", "trixie"]'
+
+          DATE="$(date -u +'%Y%m%d')"
+          TIMESTAMP="$(date -u +'%Y%m%d%H%M%S')"
+
           BRANCH_NAME="${GITHUB_REF_NAME}"
 
           if [ "$BRANCH_NAME" = "main" ]; then
@@ -47,76 +46,105 @@ jobs:
               | sed -E 's/^-+|-+$//g')-"
           fi
 
-          if [ "$((JOB_INDEX + 1))" -eq "$JOB_TOTAL" ]; then
-            IS_LATEST="true"
-          else
-            IS_LATEST="false"
-          fi
+          MATRIX="$(jq -cn \
+            --arg image "$IMAGE" \
+            --arg context "$CONTEXT" \
+            --arg target "$TARGET" \
+            --arg date "$DATE" \
+            --arg timestamp "$TIMESTAMP" \
+            --arg tag_prefix "$TAG_PREFIX" \
+            --argjson php_versions "$PHP_VERSIONS" \
+            --argjson os_versions "$OS_VERSIONS" '
+              [
+                $php_versions[] as $php |
+                $os_versions[] as $os |
+                {
+                  php: $php,
+                  os: $os
+                }
+              ] as $items
+              |
+              [
+                range(0; $items | length) as $i |
+                $items[$i] as $item |
+                ($i == (($items | length) - 1)) as $is_latest |
+                {
+                  php: $item.php,
+                  os: $item.os,
+                  context: $context,
+                  target: $target,
+                  variant: ($item.php + "-" + $item.os),
+                  build_args: (
+                    "VARIANT=" + $item.php + "\n" +
+                    "NODE_VERSION=node\n" +
+                    "OS=" + $item.os + "\n" +
+                    "CREATE_DATE=" + $date + "\n" +
+                    "BUILD_TIMESTAMP=" + $timestamp
+                  ),
+                  tags: (
+                    $image + ":" + $tag_prefix + $item.php + "-" + $item.os + "-" + $timestamp + "\n" +
+                    $image + ":" + $tag_prefix + $item.php + "-" + $item.os +
+                    (
+                      if $is_latest then
+                        "\n" + $image + ":" + $tag_prefix + $item.php + "-" + $timestamp +
+                        "\n" + $image + ":" + $tag_prefix + $item.php
+                      else
+                        ""
+                      end
+                    )
+                  ),
+                  test_image_tag: ("local/drupal-devcontainer:" + $item.php + "-" + $item.os + "-ci")
+                }
+              ]
+            ')"
 
-          echo "tag_prefix=${TAG_PREFIX}" >> "$GITHUB_OUTPUT"
-          echo "is_latest=${IS_LATEST}" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare Docker tags
-        id: tags
-        shell: bash
-        run: |
-          IMAGE_DOCKERHUB="alchatti/drupal-devcontainer"
-          IMAGE_GHCR="ghcr.io/alchatti/drupal-devcontainer"
-
-          TAG_PREFIX="${{ steps.meta.outputs.tag_prefix }}"
-          PHP_VERSION="${{ matrix.php }}"
-          OS_VERSION="${{ matrix.os }}"
-          TIMESTAMP="${{ steps.date.outputs.timestamp }}"
+          echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
 
           {
-            echo "tags<<EOF"
+            echo "## Prepared Build Matrix"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Branch | \`${BRANCH_NAME}\` |"
+            echo "| Tag prefix | \`${TAG_PREFIX}\` |"
+            echo "| Date | \`${DATE}\` |"
+            echo "| Timestamp | \`${TIMESTAMP}\` |"
+            echo ""
+            echo "### Matrix"
+            echo ""
+            echo '```json'
+            echo "$MATRIX" | jq .
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
-            # Always publish OS-specific tags
-            echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}-${TIMESTAMP}"
-            echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}"
-            echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}-${TIMESTAMP}"
-            echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}"
+  build:
+    needs: prepare
 
-            # Final matrix combination gets PHP-only aliases
-            if [ "${{ steps.meta.outputs.is_latest }}" = "true" ]; then
-              echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}-${TIMESTAMP}"
-              echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}"
-              echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}-${TIMESTAMP}"
-              echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}"
-            fi
+    permissions:
+      contents: read
 
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+    strategy:
+      max-parallel: 4
+      matrix:
+        include: ${{ fromJson(needs.prepare.outputs.matrix) }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+    uses: alchatti/.github/.github/workflows/docker-build-push.yml@main
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    with:
+      context: ${{ matrix.context }}
+      dockerfile: ${{ matrix.context }}/Dockerfile
 
-      - name: Docker Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      build_args: ${{ matrix.build_args }}
+      tags: ${{ matrix.tags }}
+      target: ${{ matrix.target }}
 
-      - name: GitHub Container Registry Login
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.PKG_GITHUB_TOKEN }}
+      test_command: |
+         echo "required"
+         exit 1
+      test_platform: linux/amd64
+      test_image_tag: ${{ matrix.test_image_tag }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          build-args: |
-            VARIANT=${{ matrix.php }}
-            NODE_VERSION=node
-            OS=${{ matrix.os }}
-            CREATE_DATE=${{ steps.date.outputs.date }}
-            BUILD_TIMESTAMP=${{ steps.date.outputs.timestamp }}
-          push: true
-          tags: ${{ steps.tags.outputs.tags }}
+      cache_from: type=gha,scope=${{ matrix.variant }}
+      cache_to: type=gha,mode=max,scope=${{ matrix.variant }}
+
+    secrets: inherit
