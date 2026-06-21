@@ -1,18 +1,12 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Build & Publish Images
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [main]
     paths-ignore: ["**.md"]
-  # pull_request:
-  #   branches: [ main ]
-  #   paths-ignore: ['**.md']
-  # Allows you to run this workflow manually from the Actions tab
+
   workflow_dispatch:
+
   schedule:
     - cron: "0 3 3 * *"
 
@@ -20,14 +14,79 @@ jobs:
   build:
     strategy:
       matrix:
-        php_ver: ["8.1", "8.2", "8.3"]
+        php: ["8.1", "8.2", "8.3"]
+        os: ["bookworm", "trixie"]
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get current date
+      - name: Generate build timestamp
         id: date
-        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+        shell: bash
+        run: |
+          echo "timestamp=$(date -u +'%Y%m%d%H%M%S')" >> "$GITHUB_OUTPUT"
+          echo "date=$(date -u +'%Y%m%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare image metadata
+        id: meta
+        shell: bash
+        env:
+          JOB_INDEX: ${{ strategy.job-index }}
+          JOB_TOTAL: ${{ strategy.job-total }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+
+          if [ "$BRANCH_NAME" = "main" ]; then
+            TAG_PREFIX=""
+          else
+            TAG_PREFIX="$(echo "$BRANCH_NAME" \
+              | tr '[:upper:]' '[:lower:]' \
+              | sed -E 's/[^a-z0-9_.-]+/-/g' \
+              | sed -E 's/^-+|-+$//g')-"
+          fi
+
+          if [ "$((JOB_INDEX + 1))" -eq "$JOB_TOTAL" ]; then
+            IS_LATEST="true"
+          else
+            IS_LATEST="false"
+          fi
+
+          echo "tag_prefix=${TAG_PREFIX}" >> "$GITHUB_OUTPUT"
+          echo "is_latest=${IS_LATEST}" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Docker tags
+        id: tags
+        shell: bash
+        run: |
+          IMAGE_DOCKERHUB="alchatti/drupal-devcontainer"
+          IMAGE_GHCR="ghcr.io/alchatti/drupal-devcontainer"
+
+          TAG_PREFIX="${{ steps.meta.outputs.tag_prefix }}"
+          PHP_VERSION="${{ matrix.php }}"
+          OS_VERSION="${{ matrix.os }}"
+          TIMESTAMP="${{ steps.date.outputs.timestamp }}"
+
+          {
+            echo "tags<<EOF"
+
+            # Always publish OS-specific tags
+            echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}-${TIMESTAMP}"
+            echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}"
+            echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}-${TIMESTAMP}"
+            echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}-${OS_VERSION}"
+
+            # Final matrix combination gets PHP-only aliases
+            if [ "${{ steps.meta.outputs.is_latest }}" = "true" ]; then
+              echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}-${TIMESTAMP}"
+              echo "${IMAGE_DOCKERHUB}:${TAG_PREFIX}${PHP_VERSION}"
+              echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}-${TIMESTAMP}"
+              echo "${IMAGE_GHCR}:${TAG_PREFIX}${PHP_VERSION}"
+            fi
+
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -53,14 +112,11 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          # platforms: linux/arm64
           build-args: |
-            VARIANT=${{ matrix.php_ver }}
+            VARIANT=${{ matrix.php }}
             NODE_VERSION=node
+            OS=${{ matrix.os }}
             CREATE_DATE=${{ steps.date.outputs.date }}
+            BUILD_TIMESTAMP=${{ steps.date.outputs.timestamp }}
           push: true
-          tags: |
-            alchatti/drupal-devcontainer:${{ matrix.php_ver }}-${{ steps.date.outputs.date }}
-            alchatti/drupal-devcontainer:${{ matrix.php_ver }}
-            ghcr.io/alchatti/drupal-devcontainer:${{ matrix.php_ver }}-${{ steps.date.outputs.date }}
-            ghcr.io/alchatti/drupal-devcontainer:${{ matrix.php_ver }}
+          tags: ${{ steps.tags.outputs.tags }}
