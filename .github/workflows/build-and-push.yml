@@ -1,66 +1,150 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Build & Publish Images
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [main]
-    paths-ignore: ["**.md"]
-  # pull_request:
-  #   branches: [ main ]
-  #   paths-ignore: ['**.md']
-  # Allows you to run this workflow manually from the Actions tab
+    paths-ignore:
+      - "**.md"
+
   workflow_dispatch:
+
   schedule:
     - cron: "0 3 3 * *"
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        php_ver: ["8.1", "8.2", "8.3"]
+  prepare:
     runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Prepare build matrix
+        id: matrix
+        shell: bash
+        run: |
+          set -euo pipefail
 
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+          IMAGE="alchatti/drupal-devcontainer"
+          CONTEXT="."
+          TARGET=""
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+          PHP_VERSIONS='["8.1", "8.2", "8.3"]'
+          OS_VERSIONS='["bookworm", "trixie"]'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+          DATE="$(date -u +'%Y%m%d')"
+          TIMESTAMP="$(date -u +'%Y%m%d%H%M%S')"
 
-      - name: Docker Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          BRANCH_NAME="${GITHUB_REF_NAME}"
 
-      - name: GitHub Container Registry Login
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.PKG_GITHUB_TOKEN }}
+          if [ "$BRANCH_NAME" = "main" ]; then
+            TAG_PREFIX=""
+          else
+            TAG_PREFIX="$(echo "$BRANCH_NAME" \
+              | tr '[:upper:]' '[:lower:]' \
+              | sed -E 's/[^a-z0-9_.-]+/-/g' \
+              | sed -E 's/^-+|-+$//g')-"
+          fi
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          # platforms: linux/arm64
-          build-args: |
-            VARIANT=${{ matrix.php_ver }}
-            NODE_VERSION=node
-            CREATE_DATE=${{ steps.date.outputs.date }}
-          push: true
-          tags: |
-            alchatti/drupal-devcontainer:${{ matrix.php_ver }}-${{ steps.date.outputs.date }}
-            alchatti/drupal-devcontainer:${{ matrix.php_ver }}
-            ghcr.io/alchatti/drupal-devcontainer:${{ matrix.php_ver }}-${{ steps.date.outputs.date }}
-            ghcr.io/alchatti/drupal-devcontainer:${{ matrix.php_ver }}
+          MATRIX="$(jq -cn \
+            --arg image "$IMAGE" \
+            --arg context "$CONTEXT" \
+            --arg target "$TARGET" \
+            --arg date "$DATE" \
+            --arg timestamp "$TIMESTAMP" \
+            --arg tag_prefix "$TAG_PREFIX" \
+            --argjson php_versions "$PHP_VERSIONS" \
+            --argjson os_versions "$OS_VERSIONS" '
+              [
+                $php_versions[] as $php |
+                $os_versions[] as $os |
+                {
+                  php: $php,
+                  os: $os
+                }
+              ] as $items
+              |
+              [
+                range(0; $items | length) as $i |
+                $items[$i] as $item |
+                ($i == (($items | length) - 1)) as $is_latest |
+                {
+                  php: $item.php,
+                  os: $item.os,
+                  context: $context,
+                  target: $target,
+                  variant: ($item.php + "-" + $item.os),
+                  build_args: (
+                    "VARIANT=" + $item.php + "\n" +
+                    "NODE_VERSION=node\n" +
+                    "OS=" + $item.os + "\n" +
+                    "CREATE_DATE=" + $date + "\n" +
+                    "BUILD_TIMESTAMP=" + $timestamp
+                  ),
+                  tags: (
+                    $image + ":" + $tag_prefix + $item.php + "-" + $item.os + "-" + $timestamp + "\n" +
+                    $image + ":" + $tag_prefix + $item.php + "-" + $item.os +
+                    (
+                      if $is_latest then
+                        "\n" + $image + ":" + $tag_prefix + $item.php + "-" + $timestamp +
+                        "\n" + $image + ":" + $tag_prefix + $item.php
+                      else
+                        ""
+                      end
+                    )
+                  ),
+                  test_image_tag: ("local/drupal-devcontainer:" + $item.php + "-" + $item.os + "-ci")
+                }
+              ]
+            ')"
+
+          echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Prepared Build Matrix"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Branch | \`${BRANCH_NAME}\` |"
+            echo "| Tag prefix | \`${TAG_PREFIX}\` |"
+            echo "| Date | \`${DATE}\` |"
+            echo "| Timestamp | \`${TIMESTAMP}\` |"
+            echo ""
+            echo "### Matrix"
+            echo ""
+            echo '```json'
+            echo "$MATRIX" | jq .
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    needs: prepare
+
+    permissions:
+      contents: read
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        include: ${{ fromJson(needs.prepare.outputs.matrix) }}
+
+    uses: alchatti/.github/.github/workflows/docker-build-push.yml@main
+
+    with:
+      context: ${{ matrix.context }}
+      dockerfile: ${{ matrix.context }}/Dockerfile
+
+      build_args: ${{ matrix.build_args }}
+      tags: ${{ matrix.tags }}
+      target: ${{ matrix.target }}
+
+      test_command: |
+         echo "required"
+         exit 1
+      test_platform: linux/amd64
+      test_image_tag: ${{ matrix.test_image_tag }}
+
+      cache_from: type=gha,scope=${{ matrix.variant }}
+      cache_to: type=gha,mode=max,scope=${{ matrix.variant }}
+
+    secrets: inherit
