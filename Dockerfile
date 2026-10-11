@@ -3,7 +3,7 @@
 # For list of tags vsist https://mcr.microsoft.com/v2/vscode/devcontainers/php/tags/list
 # Relesases code names at https://wiki.debian.org/DebianReleases#Production_Releases
 
-ARG VARIANT
+ARG VARIANT=8.2
 
 FROM mcr.microsoft.com/vscode/devcontainers/php:${VARIANT}
 
@@ -23,13 +23,13 @@ LABEL org.opencontainers.image.created=$CREATE_DATE
 
 # ENV Defaults fpr APACHE
 ENV APACHE_SERVER_NAME="localhost"
-ENV APACHE_DOCUMENT_ROOT "docroot"
-ENV WORKSPACE_ROOT "/var/www/html"
+ENV APACHE_DOCUMENT_ROOT="docroot"
+ENV WORKSPACE_ROOT="/var/www/html"
 # ENV Default theme for Oh My Posh
-ENV POSH_THEME_ENVIRONMENT "ys"
+ENV POSH_THEME_ENVIRONMENT="ys"
 # Shortcut to make development easier
-ENV W $WORKSPACE_ROOT
-ENV D $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT
+ENV W=$WORKSPACE_ROOT
+ENV D=$WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT
 
 
 RUN echo "${CREATE_DATE}" >> /var/.buildInfo
@@ -66,7 +66,7 @@ RUN chmod +x /usr/local/bin/about.sh && \
 RUN ln -s /usr/local/bin/php /usr/bin/php
 
 # Drush Launcher global drush as fallback
-ENV DRUSH_LAUNCHER_FALLBACK /opt/drush
+ENV DRUSH_LAUNCHER_FALLBACK=/opt/drush
 # Add Drush Launcher for Global and local Drush
 ADD https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar /usr/bin/drush
 RUN chmod +rx /usr/bin/drush
@@ -187,8 +187,10 @@ RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
 RUN composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 RUN composer global require drupal/coder
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
-  sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
+RUN mkdir -p ~/.local/bin && \
+  ln -s ~/.composer/vendor/bin/phpcs ~/.local/bin/phpcs && \
+  ln -s ~/.composer/vendor/bin/phpcbf ~/.local/bin/phpcbf
+ENV PATH="/home/vscode/.local/bin:${PATH}"
 
 
 USER root
