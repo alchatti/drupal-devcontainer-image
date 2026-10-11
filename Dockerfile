@@ -187,8 +187,10 @@ RUN mkdir $WORKSPACE_ROOT/$APACHE_DOCUMENT_ROOT && \
 RUN composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 RUN composer global require drupal/coder
 RUN ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-RUN sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin/phpcs && \
-  sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin/phpcbf
+RUN mkdir -p ~/.local/bin && \
+  ln -s ~/.composer/vendor/bin/phpcs ~/.local/bin/phpcs && \
+  ln -s ~/.composer/vendor/bin/phpcbf ~/.local/bin/phpcbf
+ENV PATH="/home/vscode/.local/bin:${PATH}"
 
 
 USER root
